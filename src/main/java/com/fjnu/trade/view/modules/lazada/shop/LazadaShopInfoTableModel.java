@@ -1,4 +1,4 @@
-package com.fjnu.trade.view.modules.shop;
+package com.fjnu.trade.view.modules.lazada.shop;
 
 import com.fjnu.common.utils.DateUtils;
 import com.fjnu.trade.model.lazada.LazadaShopInfo;

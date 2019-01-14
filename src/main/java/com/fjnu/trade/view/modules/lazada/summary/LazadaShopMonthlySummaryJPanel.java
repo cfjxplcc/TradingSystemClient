@@ -1,4 +1,4 @@
-package com.fjnu.trade.view.modules.summary;
+package com.fjnu.trade.view.modules.lazada.summary;
 
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.common.utils.CalculateUtils;

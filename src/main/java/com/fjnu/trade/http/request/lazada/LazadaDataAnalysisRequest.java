@@ -1,6 +1,6 @@
 package com.fjnu.trade.http.request.lazada;
 
-import com.fjnu.trade.view.modules.summary.LazadaShopMonthlySummaryJPanel;
+import com.fjnu.trade.view.modules.lazada.summary.LazadaShopMonthlySummaryJPanel;
 import javafx.scene.control.Cell;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

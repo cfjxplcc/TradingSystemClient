@@ -1,4 +1,4 @@
-package com.fjnu.trade.view.modules.lazadaorder;
+package com.fjnu.trade.view.modules.lazada.order;
 
 import java.util.List;
 

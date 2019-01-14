@@ -4,10 +4,10 @@ import com.fjnu.common.Constants;
 import com.fjnu.trade.model.PersonInfo;
 import com.fjnu.trade.module.ServerConnectInfoManager;
 import com.fjnu.trade.view.common.ButtonTabComponent;
-import com.fjnu.trade.view.modules.lazadaorder.LazadaOrderInfoControlJPanel;
+import com.fjnu.trade.view.modules.lazada.order.LazadaOrderInfoControlJPanel;
 import com.fjnu.trade.view.modules.person.PersonInfoControlJPanel;
-import com.fjnu.trade.view.modules.shop.LazadaShopInfoControlJPanel;
-import com.fjnu.trade.view.modules.summary.LazadaShopMonthlySummaryJPanel;
+import com.fjnu.trade.view.modules.lazada.shop.LazadaShopInfoControlJPanel;
+import com.fjnu.trade.view.modules.lazada.summary.LazadaShopMonthlySummaryJPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

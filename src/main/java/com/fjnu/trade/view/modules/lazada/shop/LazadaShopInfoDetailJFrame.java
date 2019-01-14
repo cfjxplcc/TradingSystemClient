@@ -1,4 +1,4 @@
-package com.fjnu.trade.view.modules.shop;
+package com.fjnu.trade.view.modules.lazada.shop;
 
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.trade.http.request.lazada.LazadaShopRequest;

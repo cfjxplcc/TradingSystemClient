@@ -1,4 +1,4 @@
-package com.fjnu.trade.view.modules.lazadaorder;
+package com.fjnu.trade.view.modules.lazada.order;
 
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.common.utils.DateUtils;
