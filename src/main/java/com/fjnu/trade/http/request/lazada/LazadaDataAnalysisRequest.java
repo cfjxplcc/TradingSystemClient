@@ -1,4 +1,4 @@
-package com.fjnu.trade.http.request;
+package com.fjnu.trade.http.request.lazada;
 
 import com.fjnu.trade.view.modules.summary.LazadaShopMonthlySummaryJPanel;
 import javafx.scene.control.Cell;

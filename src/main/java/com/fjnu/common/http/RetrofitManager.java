@@ -38,6 +38,7 @@ public class RetrofitManager {
                 .connectTimeout(Constants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(Constants.READ_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(Constants.WRITE_TIMEOUT, TimeUnit.SECONDS)
+//                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(8888))) // 设置代理
                 .build();
 
         Gson gson = new GsonBuilder()
@@ -58,7 +59,6 @@ public class RetrofitManager {
                 .baseUrl(baseUrl)
                 .addConverterFactory(NobodyConverterFactory.create())
                 .addConverterFactory(new EmptyJsonLenientConverterFactory(GsonConverterFactory.create(gson)))
-//                .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();
     }

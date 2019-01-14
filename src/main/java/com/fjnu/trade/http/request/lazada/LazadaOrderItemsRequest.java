@@ -1,4 +1,4 @@
-package com.fjnu.trade.http.request;
+package com.fjnu.trade.http.request.lazada;
 
 import com.fjnu.trade.model.lazada.LazadaOrderItemsInfo;
 import retrofit2.Call;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by LCC on 2018/4/19.
  */
-public interface LazadaOrderItemsInfoRequest {
+public interface LazadaOrderItemsRequest {
 
     @GET("lazadaorderitemsinfo/lazadaorderinfo/{id}")
     Call<List<LazadaOrderItemsInfo>> getByLazadaOrderInfo(@Path("id") String id);

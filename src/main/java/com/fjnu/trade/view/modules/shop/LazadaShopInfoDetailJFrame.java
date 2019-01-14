@@ -1,8 +1,7 @@
 package com.fjnu.trade.view.modules.shop;
 
 import com.fjnu.common.http.RetrofitManager;
-import com.fjnu.common.utils.DateUtils;
-import com.fjnu.trade.http.request.LazadaShopInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaShopRequest;
 import com.fjnu.trade.model.lazada.LazadaShopInfo;
 import org.apache.http.util.TextUtils;
 import retrofit2.Call;
@@ -172,7 +171,7 @@ public class LazadaShopInfoDetailJFrame extends JFrame {
         setComponentEnable(false);
 
         Retrofit retrofit = RetrofitManager.getInstance().getRetrofit();
-        LazadaShopInfoRequest request = retrofit.create(LazadaShopInfoRequest.class);
+        LazadaShopRequest request = retrofit.create(LazadaShopRequest.class);
         Call<String> call = request.update(lazadaShopInfo.getId(), lazadaShopInfo);
         call.enqueue(new Callback<String>() {
             @Override
@@ -217,7 +216,7 @@ public class LazadaShopInfoDetailJFrame extends JFrame {
         setComponentEnable(false);
 
         Retrofit retrofit = RetrofitManager.getInstance().getRetrofit();
-        LazadaShopInfoRequest request = retrofit.create(LazadaShopInfoRequest.class);
+        LazadaShopRequest request = retrofit.create(LazadaShopRequest.class);
         Call<String> call = request.update(lazadaShopInfo.getId(), lazadaShopInfo);
         call.enqueue(new Callback<String>() {
             @Override

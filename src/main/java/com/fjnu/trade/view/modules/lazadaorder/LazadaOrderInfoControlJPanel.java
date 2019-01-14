@@ -1,8 +1,8 @@
 package com.fjnu.trade.view.modules.lazadaorder;
 
 import com.fjnu.common.http.RetrofitManager;
-import com.fjnu.trade.http.request.LazadaOrderInfoRequest;
-import com.fjnu.trade.http.request.LazadaShopInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaOrderRequest;
+import com.fjnu.trade.http.request.lazada.LazadaShopRequest;
 import com.fjnu.trade.model.lazada.LazadaOrderInfo;
 import com.fjnu.trade.model.lazada.LazadaShopInfo;
 import com.fjnu.trade.view.common.calendar.CalendarJDialog;
@@ -303,7 +303,7 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getLazadaShopInfoFromServer() {
         setAllComponentEnable(false);
-        LazadaShopInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopInfoRequest.class);
+        LazadaShopRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopRequest.class);
         Call<List<LazadaShopInfo>> call = request.getAll();
         call.enqueue(new Callback<List<LazadaShopInfo>>() {
             @Override
@@ -331,7 +331,7 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getLazadaOrderInfoFromServer() {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
 
         String lazadaShopInfoId = "";
         if (!cbLazadaShop.getSelectedItem().toString().equals(ORDER_STATUS_ALL)) {
@@ -385,7 +385,7 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getLazadaOrderInfoByEmail() {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
 
         String email = lazadaShopInfoList.get(cbLazadaShop.getSelectedIndex() - 1).getEmail();
 
@@ -436,8 +436,8 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getLazadaOrderInfoByPurchaseOrderInfoExpressIsNull() {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
 
         Call<List<LazadaOrderInfo>> call = request.getAllByPurchaseOrderInfoExpressIsNull();
         call.enqueue(new Callback<List<LazadaOrderInfo>>() {
@@ -470,8 +470,8 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getOrderDeliveryStatusIsFalse() {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
 
         Call<List<LazadaOrderInfo>> call = request.getOrderDeliveryStatusIsFalse();
         call.enqueue(new Callback<List<LazadaOrderInfo>>() {
@@ -504,8 +504,8 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getLazadaOrderInfoByPurchaseOrderInfoThirdPartyOrderId(String id) {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
 
         Call<List<LazadaOrderInfo>> call = request.getAllByPurchaseOrderInfoThirdPartyOrderId(id);
         call.enqueue(new Callback<List<LazadaOrderInfo>>() {
@@ -538,8 +538,8 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private void getByOrderExpressNumber(String orderExpressNumber) {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
 
         Call<List<LazadaOrderInfo>> call = request.getByOrderExpressNumber(orderExpressNumber);
         call.enqueue(new Callback<List<LazadaOrderInfo>>() {

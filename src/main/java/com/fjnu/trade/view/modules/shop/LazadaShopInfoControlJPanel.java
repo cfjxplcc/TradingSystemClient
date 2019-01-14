@@ -2,18 +2,18 @@ package com.fjnu.trade.view.modules.shop;
 
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.common.utils.DesktopBrowseUtils;
-import com.fjnu.trade.http.request.LazadaAuthorizationRequest;
-import com.fjnu.trade.http.request.LazadaShopInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaShopRequest;
 import com.fjnu.trade.model.lazada.LazadaShopInfo;
-import com.fjnu.trade.view.ViewType;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,7 +165,7 @@ public class LazadaShopInfoControlJPanel extends JPanel {
     private void refreshDataFromServer() {
         setAllButtonEnable(false);
 
-        LazadaShopInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopInfoRequest.class);
+        LazadaShopRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopRequest.class);
         Call<List<LazadaShopInfo>> call = request.getAll();
         call.enqueue(new Callback<List<LazadaShopInfo>>() {
             @Override
@@ -198,7 +198,7 @@ public class LazadaShopInfoControlJPanel extends JPanel {
     private void getAuthorization() {
         setAllButtonEnable(false);
 
-        LazadaAuthorizationRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaAuthorizationRequest.class);
+        LazadaShopRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopRequest.class);
         Call<String> call = request.getAuthorizationUrl();
         call.enqueue(new Callback<String>() {
             @Override

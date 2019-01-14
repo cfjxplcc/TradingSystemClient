@@ -3,8 +3,8 @@ package com.fjnu.trade.view.modules.lazadaorder;
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.common.utils.DateUtils;
 import com.fjnu.common.utils.CalculateUtils;
-import com.fjnu.trade.http.request.LazadaOrderInfoRequest;
-import com.fjnu.trade.http.request.LazadaOrderItemsInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaOrderRequest;
+import com.fjnu.trade.http.request.lazada.LazadaOrderItemsRequest;
 import com.fjnu.trade.http.request.PurchaseOrderInfoRequest;
 import com.fjnu.trade.model.ExchangeRate;
 import com.fjnu.trade.model.lazada.LazadaOrderInfo;
@@ -816,8 +816,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         btnChangeOrderStatus.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
         Call<LazadaOrderInfo> call = request.getById(lazadaOrderInfo.getId());
         call.enqueue(new Callback<LazadaOrderInfo>() {
             @Override
@@ -854,8 +854,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         btnChangeOrderStatus.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
         Call<LazadaOrderInfo> call = request.syncLazadaOrderInfo(lazadaOrderInfo.getId());
         call.enqueue(new Callback<LazadaOrderInfo>() {
             @Override
@@ -888,8 +888,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
 
     private void getLazadaOrderItemsInfoFromServer() {
         btnRefreshOrderItemInfo.setEnabled(false);
-        LazadaOrderItemsInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderItemsInfoRequest.class);
+        LazadaOrderItemsRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderItemsRequest.class);
         Call<List<LazadaOrderItemsInfo>> call = request.getByLazadaOrderInfo(lazadaOrderInfo.getId());
         call.enqueue(new Callback<List<LazadaOrderItemsInfo>>() {
             @Override
@@ -966,8 +966,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         btnRefreshOrderInfo.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
         Call<String> call = request.updateOverseasExpressPrice(lazadaOrderInfo.getId(),
                 Float.valueOf(tfOverseasExpressPrice.getText().trim()));
         call.enqueue(new Callback<String>() {
@@ -1013,8 +1013,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
      */
     private void updateLazadaOrderInfoIsDelivery(final boolean isDelivery) {
         btnUpdateOrderDeliveryStatus.setEnabled(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
+                .create(LazadaOrderRequest.class);
         Call<String> call = request.updateLazadaOrderInfoIsDelivery(lazadaOrderInfo.getId(), isDelivery);
         call.enqueue(new Callback<String>() {
             @Override
@@ -1048,7 +1048,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     private void updateLazadaOrderInfoRemark() {
         btnEditOrderInfoData.setEnabled(false);
         tfRemark.setEditable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
         Call<String> call = request.updateLazadaOrderInfoRemark(lazadaOrderInfo.getId(), tfRemark.getText());
         call.enqueue(new Callback<String>() {
             @Override

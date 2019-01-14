@@ -88,11 +88,11 @@ public class LoginSettingJFrame extends JFrame {
         panel.add(label);
 
         rdbtnLAN = new JRadioButton("内网");
-        rdbtnLAN.setBounds(73, 71, 56, 23);
+        rdbtnLAN.setBounds(73, 71, 70, 23);
         panel.add(rdbtnLAN);
 
         rdbtnWAN = new JRadioButton("外网");
-        rdbtnWAN.setBounds(142, 71, 56, 23);
+        rdbtnWAN.setBounds(142, 71, 70, 23);
         panel.add(rdbtnWAN);
     }
 

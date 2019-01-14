@@ -1,4 +1,4 @@
-package com.fjnu.trade.http.request;
+package com.fjnu.trade.http.request.lazada;
 
 import com.fjnu.trade.model.lazada.LazadaShopInfo;
 import retrofit2.Call;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by LCC on 2018/4/9.
  */
-public interface LazadaShopInfoRequest {
+public interface LazadaShopRequest {
 
     @GET("lazadashopinfo")
     Call<List<LazadaShopInfo>> getAll();
@@ -25,5 +25,13 @@ public interface LazadaShopInfoRequest {
 
     @DELETE("lazadashopinfo/{id}")
     Call<String> delete(@Path("id") String id);
+
+    /**
+     * 获取店铺授权url
+     *
+     * @return
+     */
+    @GET("authorization/getUrl")
+    Call<String> getAuthorizationUrl();
 
 }

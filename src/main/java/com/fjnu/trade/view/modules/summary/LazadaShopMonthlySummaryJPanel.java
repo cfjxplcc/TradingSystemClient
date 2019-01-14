@@ -3,9 +3,9 @@ package com.fjnu.trade.view.modules.summary;
 import com.fjnu.common.http.RetrofitManager;
 import com.fjnu.common.utils.CalculateUtils;
 import com.fjnu.common.utils.DesktopBrowseUtils;
-import com.fjnu.trade.http.request.LazadaDataAnalysisRequest;
-import com.fjnu.trade.http.request.LazadaOrderInfoRequest;
-import com.fjnu.trade.http.request.LazadaShopInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaDataAnalysisRequest;
+import com.fjnu.trade.http.request.lazada.LazadaOrderRequest;
+import com.fjnu.trade.http.request.lazada.LazadaShopRequest;
 import com.fjnu.trade.http.request.PurchaseOrderInfoRequest;
 import com.fjnu.trade.model.ExchangeRate;
 import com.fjnu.trade.model.lazada.LazadaOrderInfo;
@@ -20,11 +20,8 @@ import retrofit2.http.GET;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.text.ParseException;
@@ -548,7 +545,7 @@ public class LazadaShopMonthlySummaryJPanel extends JPanel {
     private void getLazadaShopInfoFromServer() {
         setAllComponentEnable(false);
 
-        LazadaShopInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopInfoRequest.class);
+        LazadaShopRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaShopRequest.class);
         Call<List<LazadaShopInfo>> call = request.getAll();
         call.enqueue(new Callback<List<LazadaShopInfo>>() {
             @Override
@@ -608,8 +605,8 @@ public class LazadaShopMonthlySummaryJPanel extends JPanel {
         String beginTime = tfBeginTime.getText() + " 00:00:00";
         String endTime = tfEndTime.getText() + " 24:00:00";
 
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getNewRetorfit(20, 120, 120)
-                .create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getNewRetorfit(20, 120, 120)
+                .create(LazadaOrderRequest.class);
         Call<String> call = request.manualSyncLazadaOrderInfo(String.valueOf(beginTime), String.valueOf(endTime));
         call.enqueue(new Callback<String>() {
             @Override
@@ -642,7 +639,7 @@ public class LazadaShopMonthlySummaryJPanel extends JPanel {
 
     private void getLazadaOrderInfoFromServer() {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
         String lazadaShopInfoId = lazadaShopInfoList.get(cbLazadaShop.getSelectedIndex()).getId();
         String orderStatus = "";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

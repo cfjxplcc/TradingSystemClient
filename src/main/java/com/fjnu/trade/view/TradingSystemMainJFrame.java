@@ -82,50 +82,69 @@ public class TradingSystemMainJFrame extends JFrame {
         });
         menu.add(menuItemAccount);
 
-        JMenu mnNewMenu = new JMenu("订单系统");
-        menuBar.add(mnNewMenu);
+        JMenu lazadaJMenu = new JMenu("Lazada订单系统");
+        menuBar.add(lazadaJMenu);
 
-        JMenuItem menuItem = new JMenuItem("海外平台信息管理");
+        JMenuItem menuItem = new JMenuItem("Lazada店铺信息管理");
         menuItem.addActionListener(arg0 -> {
             if (lazadaShopInfoControlJPanel != null && tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel) != -1) {
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel));
             } else {
                 lazadaShopInfoControlJPanel = new LazadaShopInfoControlJPanel();
-                tabbedPane.addTab("海外平台信息管理", null, lazadaShopInfoControlJPanel, null);
+                tabbedPane.addTab("Lazada店铺信息管理", null, lazadaShopInfoControlJPanel, null);
                 initTabComponent(tabbedPane.getTabCount() - 1);
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel));
             }
         });
         if (Constants.IS_MANAGER_MODEL) {
-            mnNewMenu.add(menuItem);
+            lazadaJMenu.add(menuItem);
         }
 
-        JMenuItem menuItem_1 = new JMenuItem("订单信息管理");
+        JMenuItem menuItem_1 = new JMenuItem("Lazada订单信息管理");
         menuItem_1.addActionListener(e -> {
             if (lazadaOrderInfoControlJPanel != null && tabbedPane.indexOfComponent(lazadaOrderInfoControlJPanel) != -1) {
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaOrderInfoControlJPanel));
             } else {
                 lazadaOrderInfoControlJPanel = new LazadaOrderInfoControlJPanel();
-                tabbedPane.addTab("订单信息管理", null, lazadaOrderInfoControlJPanel, null);
+                tabbedPane.addTab("Lazada订单信息管理", null, lazadaOrderInfoControlJPanel, null);
                 initTabComponent(tabbedPane.getTabCount() - 1);
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaOrderInfoControlJPanel));
             }
         });
-        mnNewMenu.add(menuItem_1);
+        lazadaJMenu.add(menuItem_1);
 
-        JMenuItem menuItem_2 = new JMenuItem("统计信息");
+        JMenuItem menuItem_2 = new JMenuItem("Lazada统计信息");
         menuItem_2.addActionListener(e -> {
             if (lazadaShopMonthlySummaryJPanel != null && tabbedPane.indexOfComponent(lazadaShopMonthlySummaryJPanel) != -1) {
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopMonthlySummaryJPanel));
             } else {
                 lazadaShopMonthlySummaryJPanel = new LazadaShopMonthlySummaryJPanel();
-                tabbedPane.addTab("统计信息", null, lazadaShopMonthlySummaryJPanel, null);
+                tabbedPane.addTab("Lazada统计信息", null, lazadaShopMonthlySummaryJPanel, null);
                 initTabComponent(tabbedPane.getTabCount() - 1);
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopMonthlySummaryJPanel));
             }
         });
         if (Constants.IS_MANAGER_MODEL) {
-            mnNewMenu.add(menuItem_2);
+            lazadaJMenu.add(menuItem_2);
+        }
+
+        JMenu shopeeJMenu = new JMenu("Lazada订单系统");
+        menuBar.add(shopeeJMenu);
+
+        JMenuItem shopeeJMenuItem = new JMenuItem("Shopee店铺信息管理");
+        menuItem.addActionListener(arg0 -> {
+            // FIXME: 2019/1/14 
+          /*  if (lazadaShopInfoControlJPanel != null && tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel) != -1) {
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel));
+            } else {
+                lazadaShopInfoControlJPanel = new LazadaShopInfoControlJPanel();
+                tabbedPane.addTab("Lazada店铺信息管理", null, lazadaShopInfoControlJPanel, null);
+                initTabComponent(tabbedPane.getTabCount() - 1);
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(lazadaShopInfoControlJPanel));
+            }*/
+        });
+        if (Constants.IS_MANAGER_MODEL) {
+            lazadaJMenu.add(shopeeJMenuItem);
         }
 
         contentPane = new JPanel();

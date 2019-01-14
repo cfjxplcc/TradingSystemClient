@@ -1,7 +1,7 @@
 package com.fjnu.trade.view.modules.lazadaorder;
 
 import com.fjnu.common.http.RetrofitManager;
-import com.fjnu.trade.http.request.LazadaOrderInfoRequest;
+import com.fjnu.trade.http.request.lazada.LazadaOrderRequest;
 import com.fjnu.trade.model.lazada.LazadaOrderInfo;
 import com.lazada.platform.bean.ShipmentProviderBean;
 import retrofit2.Call;
@@ -100,7 +100,7 @@ public class LazadaOrderInfoChooseShipmentProvidersJFrame extends JFrame {
 
     private void getShipmentProvider(String id) {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
 
         Call<List<ShipmentProviderBean>> call = request.getShipmentProviderByLazadaShopInfo(id);
         call.enqueue(new Callback<List<ShipmentProviderBean>>() {
@@ -157,7 +157,7 @@ public class LazadaOrderInfoChooseShipmentProvidersJFrame extends JFrame {
 
     private void changeOrderStatusToReadyToShip(String orderId, String shippingProvider) {
         setAllComponentEnable(false);
-        LazadaOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderInfoRequest.class);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
 
         Call<String> call = request.changeOrderStatusToReadyToShip(orderId, shippingProvider);
         call.enqueue(new Callback<String>() {
