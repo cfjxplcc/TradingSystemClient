@@ -25,10 +25,7 @@ public class DesktopBrowseUtils {
                     desktop.browse(uri);
                     return true;
                 }
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                return false;
-            } catch (IOException e) {
+            } catch (IllegalArgumentException | IOException e) {
                 e.printStackTrace();
                 return false;
             }

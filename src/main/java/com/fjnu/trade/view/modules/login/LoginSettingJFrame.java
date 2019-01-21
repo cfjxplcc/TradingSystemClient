@@ -190,7 +190,7 @@ public class LoginSettingJFrame extends JFrame {
                     JOptionPane.showMessageDialog(null,
                             "连接成功",
                             "INFORMATION_MESSAGE",
-                            JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.INFORMATION_MESSAGE, null);
                 } else {
                     JOptionPane.showMessageDialog(null,
                             "服务器异常",
