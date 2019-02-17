@@ -15,14 +15,13 @@ import retrofit2.Response;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class PurchaseOrderInfoDetailJFrame extends JFrame {
+public class LazadaPurchaseOrderInfoDetailJFrame extends JFrame {
 
     private JPanel contentPane;
     private JTextField tfId;
@@ -59,25 +58,9 @@ public class PurchaseOrderInfoDetailJFrame extends JFrame {
     };
 
     /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    PurchaseOrderInfoDetailJFrame frame = new PurchaseOrderInfoDetailJFrame(ViewType.SHOW, null, null);
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    /**
      * Create the frame.
      */
-    public PurchaseOrderInfoDetailJFrame(ViewType viewType, PurchaseOrderInfo purchaseOrderInfo, List<LazadaOrderItemsInfo> lazadaOrderItemsInfoList) {
+    public LazadaPurchaseOrderInfoDetailJFrame(ViewType viewType, PurchaseOrderInfo purchaseOrderInfo, List<LazadaOrderItemsInfo> lazadaOrderItemsInfoList) {
         this.viewType = viewType;
         this.purchaseOrderInfo = purchaseOrderInfo;
         this.lazadaOrderItemsInfoList = lazadaOrderItemsInfoList;
@@ -88,7 +71,7 @@ public class PurchaseOrderInfoDetailJFrame extends JFrame {
 
     private void initClickEvent() {
         btnSaveOrEdit.addActionListener(e -> {
-            switch (PurchaseOrderInfoDetailJFrame.this.viewType) {
+            switch (viewType) {
                 case SAVE:
                     if (!checkInfoFormat()) {
                         return;
@@ -98,8 +81,8 @@ public class PurchaseOrderInfoDetailJFrame extends JFrame {
                     float totalPrice = Float.valueOf(tfTotalPrice.getText().trim());
 
                     PurchaseOrderInfo purchaseOrderInfo1 = new PurchaseOrderInfo();
-                    purchaseOrderInfo1.setLazadaOrderInfo(PurchaseOrderInfoDetailJFrame.this.lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()).getLazadaOrderInfo());
-                    purchaseOrderInfo1.setLazadaOrderItemsInfo(PurchaseOrderInfoDetailJFrame.this.lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()));
+                    purchaseOrderInfo1.setLazadaOrderInfo(lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()).getLazadaOrderInfo());
+                    purchaseOrderInfo1.setLazadaOrderItemsInfo(lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()));
                     purchaseOrderInfo1.setThirdPartyOrderId(tfThirdPartyOrderId.getText().trim());
                     purchaseOrderInfo1.setDescription(tfDescription.getText().trim());
                     purchaseOrderInfo1.setTotalPrice(totalPrice);
@@ -115,7 +98,7 @@ public class PurchaseOrderInfoDetailJFrame extends JFrame {
                     savePurchaseOrderInfo(purchaseOrderInfo1);
                     break;
                 case SHOW:
-                    PurchaseOrderInfoDetailJFrame.this.viewType = ViewType.EDIT;
+                    viewType = ViewType.EDIT;
                     btnSaveOrEdit.setText("保存");
                     setComponentEnable(true);
                     break;
@@ -129,26 +112,26 @@ public class PurchaseOrderInfoDetailJFrame extends JFrame {
                     float weight1 = Float.valueOf(tfWeight.getText().trim());
                     float totalPrice1 = Float.valueOf(tfTotalPrice.getText().trim());
 
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setLazadaOrderInfo(PurchaseOrderInfoDetailJFrame.this.lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()).getLazadaOrderInfo());
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setLazadaOrderItemsInfo(PurchaseOrderInfoDetailJFrame.this.lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()));
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setThirdPartyOrderId(tfThirdPartyOrderId.getText().trim());
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setDescription(tfDescription.getText().trim());
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setTotalPrice(totalPrice1);
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setItemTotalMunber(itemTotalNumber1);
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setOrderUrl(tfUrl.getText().trim());
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setWeight(weight1);
-                    PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setDate(DateUtils.strToSqlDate(tfDate.getText(), "yyyy-MM-dd"));
+                    purchaseOrderInfo.setLazadaOrderInfo(lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()).getLazadaOrderInfo());
+                    purchaseOrderInfo.setLazadaOrderItemsInfo(lazadaOrderItemsInfoList.get(cbLazadaOrderItemsInfos.getSelectedIndex()));
+                    purchaseOrderInfo.setThirdPartyOrderId(tfThirdPartyOrderId.getText().trim());
+                    purchaseOrderInfo.setDescription(tfDescription.getText().trim());
+                    purchaseOrderInfo.setTotalPrice(totalPrice1);
+                    purchaseOrderInfo.setItemTotalMunber(itemTotalNumber1);
+                    purchaseOrderInfo.setOrderUrl(tfUrl.getText().trim());
+                    purchaseOrderInfo.setWeight(weight1);
+                    purchaseOrderInfo.setDate(DateUtils.strToSqlDate(tfDate.getText(), "yyyy-MM-dd"));
                     if (TextUtils.isEmpty(tfExpressNumber.getText())) {
-                        PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setOrderExpressNumber(null);
+                        purchaseOrderInfo.setOrderExpressNumber(null);
                     } else {
-                        PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.setOrderExpressNumber(tfExpressNumber.getText().trim());
+                        purchaseOrderInfo.setOrderExpressNumber(tfExpressNumber.getText().trim());
                     }
 
-                    updatePurchaseOrderInfo(PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo);
+                    updatePurchaseOrderInfo(purchaseOrderInfo);
             }
         });
         btnBack.addActionListener(e -> dispose());
-        btnDelete.addActionListener(e -> deletePurchaseOrderInfo(PurchaseOrderInfoDetailJFrame.this.purchaseOrderInfo.getId()));
+        btnDelete.addActionListener(e -> deletePurchaseOrderInfo(purchaseOrderInfo.getId()));
         btnOpenUrl.addActionListener(e -> {
             if (!TextUtils.isEmpty(tfUrl.getText())) {
                 DesktopBrowseUtils.useDesktopBrowseOpenUrl(tfUrl.getText());

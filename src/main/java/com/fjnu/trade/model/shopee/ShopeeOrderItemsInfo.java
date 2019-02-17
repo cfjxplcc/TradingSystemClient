@@ -16,7 +16,7 @@ public class ShopeeOrderItemsInfo {
     private int variationQuantityPurchased;
     private float variationOriginalPrice;
     private float variationDiscountedPrice;
-    private boolean isWholesale;
+    private boolean wholesale;
 
     public ShopeeOrderItemsInfo() {
     }
@@ -110,10 +110,10 @@ public class ShopeeOrderItemsInfo {
     }
 
     public boolean isWholesale() {
-        return isWholesale;
+        return wholesale;
     }
 
     public void setWholesale(boolean wholesale) {
-        isWholesale = wholesale;
+        this.wholesale = wholesale;
     }
 }

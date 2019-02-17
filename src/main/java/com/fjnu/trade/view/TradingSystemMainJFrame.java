@@ -8,6 +8,7 @@ import com.fjnu.trade.view.modules.lazada.order.LazadaOrderInfoControlJPanel;
 import com.fjnu.trade.view.modules.person.PersonInfoControlJPanel;
 import com.fjnu.trade.view.modules.lazada.shop.LazadaShopInfoControlJPanel;
 import com.fjnu.trade.view.modules.lazada.summary.LazadaShopMonthlySummaryJPanel;
+import com.fjnu.trade.view.modules.shopee.order.ShopeeOrderInfoControlJPanel;
 import com.fjnu.trade.view.modules.shopee.shop.ShopeeShopControlJPanel;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class TradingSystemMainJFrame extends JFrame {
     private LazadaShopMonthlySummaryJPanel lazadaShopMonthlySummaryJPanel;
 
     private ShopeeShopControlJPanel shopeeShopControlJPanel;
+    private ShopeeOrderInfoControlJPanel shopeeOrderInfoControlJPanel;
 
     private PersonInfo personInfo;
 
@@ -135,8 +137,8 @@ public class TradingSystemMainJFrame extends JFrame {
         JMenu shopeeJMenu = new JMenu("Shopee订单系统");
         menuBar.add(shopeeJMenu);
 
-        JMenuItem shopeeJMenuItem = new JMenuItem("Shopee店铺信息管理");
-        shopeeJMenuItem.addActionListener(arg0 -> {
+        JMenuItem shopeeShopJMenuItem = new JMenuItem("Shopee店铺信息管理");
+        shopeeShopJMenuItem.addActionListener(arg0 -> {
             if (shopeeShopControlJPanel != null && tabbedPane.indexOfComponent(shopeeShopControlJPanel) != -1) {
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(shopeeShopControlJPanel));
             } else {
@@ -147,8 +149,21 @@ public class TradingSystemMainJFrame extends JFrame {
             }
         });
         if (Constants.IS_MANAGER_MODEL) {
-            shopeeJMenu.add(shopeeJMenuItem);
+            shopeeJMenu.add(shopeeShopJMenuItem);
         }
+
+        JMenuItem shopeeOrderJMenuItem = new JMenuItem("Shopee订单信息管理");
+        shopeeOrderJMenuItem.addActionListener(arg0 -> {
+            if (shopeeOrderInfoControlJPanel != null && tabbedPane.indexOfComponent(shopeeOrderInfoControlJPanel) != -1) {
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(shopeeOrderInfoControlJPanel));
+            } else {
+                shopeeOrderInfoControlJPanel = new ShopeeOrderInfoControlJPanel();
+                tabbedPane.addTab("Shopee订单信息管理", null, shopeeOrderInfoControlJPanel, null);
+                initTabComponent(tabbedPane.getTabCount() - 1);
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfComponent(shopeeOrderInfoControlJPanel));
+            }
+        });
+        shopeeJMenu.add(shopeeOrderJMenuItem);
 
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

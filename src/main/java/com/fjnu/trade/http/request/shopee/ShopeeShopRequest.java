@@ -28,7 +28,7 @@ public interface ShopeeShopRequest {
     Call<String> getShopeeAuthorizationUrl();
 
     /**
-     * 获取shopee授权url
+     * 获取shopee撤销授权url
      *
      * @return
      */

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by LCC on 2018/4/19.
  */
-public interface LazadaOrderItemsRequest {
+public interface LazadaOrderItemRequest {
 
     @GET("lazadaorderitemsinfo/lazadaorderinfo/{id}")
     Call<List<LazadaOrderItemsInfo>> getByLazadaOrderInfo(@Path("id") String id);

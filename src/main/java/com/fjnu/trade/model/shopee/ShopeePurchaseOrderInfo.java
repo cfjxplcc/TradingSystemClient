@@ -13,7 +13,7 @@ public class ShopeePurchaseOrderInfo {
     private String thirdPartyOrderId;
     private String description;
     private Float totalPrice;
-    private int itemTotalMunber;
+    private int itemTotalNumber;
     private String orderUrl;
     private Float weight;
     private Timestamp date;
@@ -67,12 +67,12 @@ public class ShopeePurchaseOrderInfo {
         this.totalPrice = totalPrice;
     }
 
-    public int getItemTotalMunber() {
-        return itemTotalMunber;
+    public int getItemTotalNumber() {
+        return itemTotalNumber;
     }
 
-    public void setItemTotalMunber(int itemTotalMunber) {
-        this.itemTotalMunber = itemTotalMunber;
+    public void setItemTotalNumber(int itemTotalNumber) {
+        this.itemTotalNumber = itemTotalNumber;
     }
 
     public String getOrderUrl() {

@@ -1,18 +1,17 @@
-package com.fjnu.trade.view.modules.lazada.order;
+package com.fjnu.trade.view.modules.shopee.order;
 
 import com.fjnu.common.http.RetrofitManager;
-import com.fjnu.common.utils.DateUtils;
 import com.fjnu.common.utils.CalculateUtils;
-import com.fjnu.trade.http.request.lazada.LazadaOrderRequest;
-import com.fjnu.trade.http.request.lazada.LazadaOrderItemRequest;
-import com.fjnu.trade.http.request.PurchaseOrderInfoRequest;
+import com.fjnu.common.utils.DateUtils;
+import com.fjnu.trade.http.request.shopee.ShopeeOrderItemRequest;
+import com.fjnu.trade.http.request.shopee.ShopeeOrderRequest;
+import com.fjnu.trade.http.request.shopee.ShopeePurchaseRequest;
 import com.fjnu.trade.model.ExchangeRate;
-import com.fjnu.trade.model.lazada.LazadaOrderInfo;
-import com.fjnu.trade.model.lazada.LazadaOrderItemsInfo;
-import com.fjnu.trade.model.lazada.PurchaseOrderInfo;
+import com.fjnu.trade.model.shopee.ShopeeOrderInfo;
+import com.fjnu.trade.model.shopee.ShopeeOrderItemsInfo;
+import com.fjnu.trade.model.shopee.ShopeePurchaseOrderInfo;
 import com.fjnu.trade.view.ViewType;
-import com.lazada.platform.bean.OrderBean;
-import org.apache.http.util.TextUtils;
+import com.sun.istack.internal.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,48 +20,46 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LazadaOrderInfoDetailJFrame extends JFrame {
+public class ShopeeOrderInfoDetailJFrame extends JFrame {
 
     private JPanel contentPane;
     private JTextField tfShopName;
-    private JTextField tfLazadaOrderId;
+    private JTextField tfOrderSn;
     private JTextField tfOrderStatus;
     private JTextField tfOrderCreateTime;
     private JTextField tfOrderTotalPrice;
     private JTextField tfPurchaseTotalPrice;
-    private JTextField tfOrderItemsSize;
-    private JTextField tfOrderItemsInfo;
-    private JTextField tfLazadaOrderRemark;
+    private JTextField tfShopId;
+    private JTextField tfDataToShip;
+    private JTextField tfEscrowAmount;
+    private JTextField tfMessageToSeller;
+    private JTextField tfShopeeOrderNote;
     private JTextField tfRemark;
-    private JTextField tfFirstName;
-    private JTextField tfLastName;
-    private JTextField tfPhone1;
-    private JTextField tfPhone2;
-    private JTextField tfAddress1;
-    private JTextField tfCustomerEmail;
-    private JTextField tfCity;
-    private JTextField tfPostCode;
-    private JTextField tfAddress2;
-    private JTextField tfAddress3;
-    private JTextField tfAddress4;
+    private JTextField tfRecipientName;
+    private JTextField tfRecipientPhone;
+    private JTextField tfRecipientCountry;
+    private JTextField tfRecipientZipCode;
+    private JTextField tfRecipientFullAddress;
     private JTextField tfOverseasExpress;
     private JTextField tfOverseasExpressPrice;
     private JTextField tfCalculationCoefficient;
     private JTextField tfCostOfSales;
     private JTextField tfProfit;
     private JTextField tfProfitRate;
-    private JComboBox cbExchange;
+    private JComboBox<String> cbExchange;
     private JLabel lbCostOfSales;
     private JLabel lbProfit;
     private JCheckBox cbIsDelivery;
 
     private JButton btnRefreshOrderInfo;
     private JButton btnEditOrderInfoData;
-    private JButton btnChangeOrderStatus;
     private JButton btnRefreshOrderItemInfo;
     private JButton btnRefreshPurchaseInfo;
     private JButton btnAddPurchaseInfo;
@@ -71,17 +68,14 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     private JButton btnUpdateOrderDeliveryStatus;
     private JButton btnSyncOrderData;
 
-    private LazadaOrderInfoChooseShipmentProvidersJFrame lazadaOrderInfoChooseShipmentProvidersJFrame;
-
     private JTable orderItemsInfoTable;
-    private LazadaOrderItemsInfoTableModel lazadaOrderItemsInfoTableModel;
-    private List<LazadaOrderItemsInfo> lazadaOrderItemsInfos = new ArrayList<>();
-    private LazadaOrderItemsInfoJFrame lazadaOrderItemsInfoJFrame;
+    private ShopeeOrderItemsInfoTableModel shopeeOrderItemsInfoTableModel;
+    private List<ShopeeOrderItemsInfo> shopeeOrderItemsInfoList = new ArrayList<>();
 
     private JTable purchaseInfoTable;
-    private LazadaPurchaseOrderInfoTableModel lazadaPurchaseOrderInfoTableModel;
-    private List<PurchaseOrderInfo> purchaseOrderInfos = new ArrayList<>();
-    private LazadaPurchaseOrderInfoDetailJFrame lazadaPurchaseOrderInfoDetailJFrame;
+    private ShopeePurchaseOrderInfoTableModel shopeePurchaseOrderInfoTableModel;
+    private List<ShopeePurchaseOrderInfo> shopeePurchaseOrderInfoList = new ArrayList<>();
+    private ShopeePurchaseOrderInfoDetailJFrame shopeePurchaseOrderInfoDetailJFrame;
     private WindowListener purchaseOrderInfoDetailJFrameListener = new WindowListener() {
         @Override
         public void windowOpened(WindowEvent e) {
@@ -113,13 +107,13 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         }
     };
 
-    private LazadaOrderInfo lazadaOrderInfo;
+    private ShopeeOrderInfo shopeeOrderInfo;
 
-    /**
-     * Create the frame.
-     */
-    public LazadaOrderInfoDetailJFrame(LazadaOrderInfo lazadaOrderInfo) {
-        this.lazadaOrderInfo = lazadaOrderInfo;
+    public ShopeeOrderInfoDetailJFrame(@NotNull ShopeeOrderInfo shopeeOrderInfo) {
+        if (shopeeOrderInfo == null) {
+            throw new NullPointerException("ShopeeOrderInfo can not be null!!!");
+        }
+        this.shopeeOrderInfo = shopeeOrderInfo;
         initView();
         initClickEvent();
         initData();
@@ -151,9 +145,6 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         btnEditOrderInfoData = new JButton("编辑数据");
         panel.add(btnEditOrderInfoData);
 
-        btnChangeOrderStatus = new JButton("更改订单状态为ready_to_ship");
-        panel.add(btnChangeOrderStatus);
-
         btnSyncOrderData = new JButton("同步数据");
         panel.add(btnSyncOrderData);
 
@@ -167,31 +158,42 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         panel_1.add(panel_2);
         panel_2.setLayout(null);
 
+        JLabel lblid = new JLabel("店铺id");
+        lblid.setBounds(25, 21, 48, 16);
+        lblid.setHorizontalAlignment(SwingConstants.CENTER);
+        panel_2.add(lblid);
+
+        tfShopId = new JTextField();
+        tfShopId.setEditable(false);
+        tfShopId.setColumns(10);
+        tfShopId.setBounds(85, 18, 117, 21);
+        panel_2.add(tfShopId);
+
         JLabel label = new JLabel("店铺名称");
         label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setBounds(25, 21, 66, 15);
+        label.setBounds(241, 21, 66, 15);
         panel_2.add(label);
 
         tfShopName = new JTextField();
         tfShopName.setEditable(false);
-        tfShopName.setBounds(101, 18, 117, 21);
+        tfShopName.setBounds(317, 18, 117, 21);
         panel_2.add(tfShopName);
         tfShopName.setColumns(10);
 
-        JLabel lblLazada = new JLabel("Lazada订单号");
-        lblLazada.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLazada.setBounds(241, 21, 103, 15);
-        panel_2.add(lblLazada);
+        JLabel lblShopee = new JLabel("Shopee订单Sn");
+        lblShopee.setHorizontalAlignment(SwingConstants.CENTER);
+        lblShopee.setBounds(457, 21, 103, 15);
+        panel_2.add(lblShopee);
 
-        tfLazadaOrderId = new JTextField();
-        tfLazadaOrderId.setEditable(false);
-        tfLazadaOrderId.setBounds(354, 18, 173, 21);
-        panel_2.add(tfLazadaOrderId);
-        tfLazadaOrderId.setColumns(10);
+        tfOrderSn = new JTextField();
+        tfOrderSn.setEditable(false);
+        tfOrderSn.setBounds(560, 18, 173, 21);
+        panel_2.add(tfOrderSn);
+        tfOrderSn.setColumns(10);
 
         JLabel label_1 = new JLabel("订单状态");
         label_1.setHorizontalAlignment(SwingConstants.CENTER);
-        label_1.setBounds(573, 21, 60, 15);
+        label_1.setBounds(755, 21, 60, 15);
         panel_2.add(label_1);
 
         JLabel label_2 = new JLabel("订单日期");
@@ -205,91 +207,104 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         panel_2.add(tfOrderCreateTime);
         tfOrderCreateTime.setColumns(10);
 
-        JLabel label_3 = new JLabel("订单总收入金额");
+        JLabel label_3 = new JLabel("订单总金额");
         label_3.setHorizontalAlignment(SwingConstants.CENTER);
-        label_3.setBounds(258, 62, 103, 15);
+        label_3.setBounds(25, 100, 80, 15);
         panel_2.add(label_3);
 
         tfOrderTotalPrice = new JTextField();
+        tfOrderTotalPrice.setHorizontalAlignment(SwingConstants.CENTER);
         tfOrderTotalPrice.setEditable(false);
-        tfOrderTotalPrice.setBounds(371, 59, 54, 21);
+        tfOrderTotalPrice.setBounds(111, 96, 100, 21);
         panel_2.add(tfOrderTotalPrice);
         tfOrderTotalPrice.setColumns(10);
 
         JLabel label_4 = new JLabel("采购成本");
         label_4.setHorizontalAlignment(SwingConstants.CENTER);
-        label_4.setBounds(473, 62, 54, 15);
+        label_4.setBounds(434, 100, 54, 15);
         panel_2.add(label_4);
 
         tfPurchaseTotalPrice = new JTextField();
         tfPurchaseTotalPrice.setEditable(false);
-        tfPurchaseTotalPrice.setBounds(537, 59, 66, 21);
+        tfPurchaseTotalPrice.setBounds(495, 96, 100, 21);
         panel_2.add(tfPurchaseTotalPrice);
         tfPurchaseTotalPrice.setColumns(10);
 
         JLabel label_5 = new JLabel("汇率选择");
         label_5.setHorizontalAlignment(SwingConstants.CENTER);
-        label_5.setBounds(648, 62, 72, 15);
+        label_5.setBounds(591, 62, 72, 15);
         panel_2.add(label_5);
 
-        cbExchange = new JComboBox();
-        cbExchange.setBounds(730, 59, 158, 21);
+        cbExchange = new JComboBox<>();
+        cbExchange.setBounds(673, 59, 158, 21);
         panel_2.add(cbExchange);
 
-        JLabel label_6 = new JLabel("订单商品数量");
-        label_6.setHorizontalAlignment(SwingConstants.CENTER);
-        label_6.setBounds(25, 99, 84, 15);
-        panel_2.add(label_6);
-
-        tfOrderItemsSize = new JTextField();
-        tfOrderItemsSize.setEditable(false);
-        tfOrderItemsSize.setBounds(119, 96, 54, 21);
-        panel_2.add(tfOrderItemsSize);
-        tfOrderItemsSize.setColumns(10);
-
-        JLabel label_7 = new JLabel("订单物品信息");
+        JLabel label_7 = new JLabel("买家留言");
         label_7.setHorizontalAlignment(SwingConstants.CENTER);
         label_7.setBounds(25, 137, 92, 15);
         panel_2.add(label_7);
 
-        tfOrderItemsInfo = new JTextField();
-        tfOrderItemsInfo.setEditable(false);
-        tfOrderItemsInfo.setBounds(129, 134, 720, 21);
-        panel_2.add(tfOrderItemsInfo);
-        tfOrderItemsInfo.setColumns(10);
+        tfMessageToSeller = new JTextField();
+        tfMessageToSeller.setEditable(false);
+        tfMessageToSeller.setBounds(129, 134, 720, 21);
+        panel_2.add(tfMessageToSeller);
+        tfMessageToSeller.setColumns(10);
 
-        JLabel lblLazada_1 = new JLabel("Lazada平台订单备注");
-        lblLazada_1.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLazada_1.setBounds(10, 184, 132, 15);
-        panel_2.add(lblLazada_1);
+        JLabel lblshopee_1 = new JLabel("Shopee平台订单备注");
+        lblshopee_1.setHorizontalAlignment(SwingConstants.CENTER);
+        lblshopee_1.setBounds(10, 180, 132, 15);
+        panel_2.add(lblshopee_1);
 
-        tfLazadaOrderRemark = new JTextField();
-        tfLazadaOrderRemark.setEditable(false);
-        tfLazadaOrderRemark.setColumns(10);
-        tfLazadaOrderRemark.setBounds(152, 181, 697, 21);
-        panel_2.add(tfLazadaOrderRemark);
+        tfShopeeOrderNote = new JTextField();
+        tfShopeeOrderNote.setEditable(false);
+        tfShopeeOrderNote.setColumns(10);
+        tfShopeeOrderNote.setBounds(152, 177, 697, 21);
+        panel_2.add(tfShopeeOrderNote);
 
         JLabel label_10 = new JLabel("公司内部备注");
         label_10.setHorizontalAlignment(SwingConstants.CENTER);
-        label_10.setBounds(25, 232, 92, 15);
+        label_10.setBounds(25, 230, 92, 15);
         panel_2.add(label_10);
 
         tfRemark = new JTextField();
         tfRemark.setEditable(false);
         tfRemark.setColumns(10);
-        tfRemark.setBounds(129, 229, 720, 21);
+        tfRemark.setBounds(129, 227, 720, 21);
         panel_2.add(tfRemark);
 
         tfOrderStatus = new JTextField();
         tfOrderStatus.setEditable(false);
-        tfOrderStatus.setBounds(637, 18, 117, 21);
+        tfOrderStatus.setBounds(819, 18, 117, 21);
         panel_2.add(tfOrderStatus);
         tfOrderStatus.setColumns(10);
 
         cbIsDelivery = new JCheckBox("出货");
         cbIsDelivery.setEnabled(false);
-        cbIsDelivery.setBounds(207, 95, 72, 23);
+        cbIsDelivery.setBounds(630, 95, 72, 23);
         panel_2.add(cbIsDelivery);
+
+        JLabel label_8 = new JLabel("订单最后出货日期");
+        label_8.setHorizontalAlignment(SwingConstants.CENTER);
+        label_8.setBounds(270, 62, 120, 15);
+        panel_2.add(label_8);
+
+        tfDataToShip = new JTextField();
+        tfDataToShip.setEditable(false);
+        tfDataToShip.setColumns(10);
+        tfDataToShip.setBounds(396, 59, 130, 21);
+        panel_2.add(tfDataToShip);
+
+        JLabel label_6 = new JLabel("订单进帐金额");
+        label_6.setHorizontalAlignment(SwingConstants.CENTER);
+        label_6.setBounds(213, 100, 100, 15);
+        panel_2.add(label_6);
+
+        tfEscrowAmount = new JTextField();
+        tfEscrowAmount.setHorizontalAlignment(SwingConstants.CENTER);
+        tfEscrowAmount.setEditable(false);
+        tfEscrowAmount.setColumns(10);
+        tfEscrowAmount.setBounds(310, 96, 100, 21);
+        panel_2.add(tfEscrowAmount);
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setBounds(0, 285, 968, 298);
@@ -299,126 +314,61 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         tabbedPane.addTab("客户信息", null, customerInfoPanel, null);
         customerInfoPanel.setLayout(null);
 
-        JLabel lblFirstName = new JLabel("FirstName");
-        lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
-        lblFirstName.setBounds(36, 28, 72, 15);
-        customerInfoPanel.add(lblFirstName);
+        JLabel lblRecipientName = new JLabel("收件人姓名");
+        lblRecipientName.setHorizontalAlignment(SwingConstants.CENTER);
+        lblRecipientName.setBounds(36, 28, 80, 15);
+        customerInfoPanel.add(lblRecipientName);
 
-        tfFirstName = new JTextField();
-        tfFirstName.setEditable(false);
-        tfFirstName.setBounds(115, 25, 100, 21);
-        customerInfoPanel.add(tfFirstName);
-        tfFirstName.setColumns(10);
+        tfRecipientName = new JTextField();
+        tfRecipientName.setEditable(false);
+        tfRecipientName.setBounds(120, 24, 150, 21);
+        customerInfoPanel.add(tfRecipientName);
+        tfRecipientName.setColumns(10);
 
-        JLabel lblLastName = new JLabel("LastName");
-        lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
-        lblLastName.setBounds(249, 25, 72, 15);
-        customerInfoPanel.add(lblLastName);
+        JLabel lblRecipientPhone = new JLabel("收件人电话");
+        lblRecipientPhone.setHorizontalAlignment(SwingConstants.CENTER);
+        lblRecipientPhone.setBounds(370, 28, 80, 15);
+        customerInfoPanel.add(lblRecipientPhone);
 
-        tfLastName = new JTextField();
-        tfLastName.setEditable(false);
-        tfLastName.setColumns(10);
-        tfLastName.setBounds(328, 22, 66, 21);
-        customerInfoPanel.add(tfLastName);
+        tfRecipientPhone = new JTextField();
+        tfRecipientPhone.setEditable(false);
+        tfRecipientPhone.setColumns(10);
+        tfRecipientPhone.setBounds(450, 24, 150, 21);
+        customerInfoPanel.add(tfRecipientPhone);
 
-        JLabel lblPhone = new JLabel("Phone-1");
-        lblPhone.setHorizontalAlignment(SwingConstants.CENTER);
-        lblPhone.setBounds(472, 25, 60, 15);
-        customerInfoPanel.add(lblPhone);
-
-        tfPhone1 = new JTextField();
-        tfPhone1.setEditable(false);
-        tfPhone1.setColumns(10);
-        tfPhone1.setBounds(539, 22, 128, 21);
-        customerInfoPanel.add(tfPhone1);
-
-        JLabel lblPhone_1 = new JLabel("Phone-2");
-        lblPhone_1.setHorizontalAlignment(SwingConstants.CENTER);
-        lblPhone_1.setBounds(711, 25, 60, 15);
-        customerInfoPanel.add(lblPhone_1);
-
-        tfPhone2 = new JTextField();
-        tfPhone2.setEditable(false);
-        tfPhone2.setColumns(10);
-        tfPhone2.setBounds(777, 22, 143, 21);
-        customerInfoPanel.add(tfPhone2);
-
-        JLabel lblNewLabel = new JLabel("Address-1");
+        JLabel lblNewLabel = new JLabel("收件国家");
         lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
         lblNewLabel.setBounds(36, 76, 72, 15);
         customerInfoPanel.add(lblNewLabel);
 
-        tfAddress1 = new JTextField();
-        tfAddress1.setEditable(false);
-        tfAddress1.setBounds(118, 73, 246, 21);
-        customerInfoPanel.add(tfAddress1);
-        tfAddress1.setColumns(10);
+        tfRecipientCountry = new JTextField();
+        tfRecipientCountry.setEditable(false);
+        tfRecipientCountry.setBounds(118, 73, 200, 21);
+        customerInfoPanel.add(tfRecipientCountry);
+        tfRecipientCountry.setColumns(10);
 
-        JLabel lblCustomeremail = new JLabel("CustomerEmail");
-        lblCustomeremail.setHorizontalAlignment(SwingConstants.CENTER);
-        lblCustomeremail.setBounds(23, 176, 100, 15);
-        customerInfoPanel.add(lblCustomeremail);
-
-        tfCustomerEmail = new JTextField();
-        tfCustomerEmail.setEditable(false);
-        tfCustomerEmail.setBounds(144, 173, 569, 21);
-        customerInfoPanel.add(tfCustomerEmail);
-        tfCustomerEmail.setColumns(10);
-
-        tfCity = new JTextField();
-        tfCity.setEditable(false);
-        tfCity.setColumns(10);
-        tfCity.setBounds(77, 224, 128, 21);
-        customerInfoPanel.add(tfCity);
-
-        JLabel lblCity = new JLabel("City");
-        lblCity.setHorizontalAlignment(SwingConstants.CENTER);
-        lblCity.setBounds(10, 227, 60, 15);
-        customerInfoPanel.add(lblCity);
-
-        JLabel lblPostcode = new JLabel("PostCode");
-        lblPostcode.setHorizontalAlignment(SwingConstants.CENTER);
-        lblPostcode.setBounds(259, 227, 60, 15);
-        customerInfoPanel.add(lblPostcode);
-
-        tfPostCode = new JTextField();
-        tfPostCode.setEditable(false);
-        tfPostCode.setColumns(10);
-        tfPostCode.setBounds(326, 224, 128, 21);
-        customerInfoPanel.add(tfPostCode);
-
-        JLabel lblAddress = new JLabel("Address-2");
+        JLabel lblAddress = new JLabel("邮政编码");
         lblAddress.setHorizontalAlignment(SwingConstants.CENTER);
-        lblAddress.setBounds(425, 76, 72, 15);
+        lblAddress.setBounds(370, 76, 72, 15);
         customerInfoPanel.add(lblAddress);
 
-        tfAddress2 = new JTextField();
-        tfAddress2.setEditable(false);
-        tfAddress2.setColumns(10);
-        tfAddress2.setBounds(507, 73, 246, 21);
-        customerInfoPanel.add(tfAddress2);
+        tfRecipientZipCode = new JTextField();
+        tfRecipientZipCode.setEditable(false);
+        tfRecipientZipCode.setColumns(10);
+        tfRecipientZipCode.setBounds(450, 73, 200, 21);
+        customerInfoPanel.add(tfRecipientZipCode);
 
-        JLabel lblAddress_1 = new JLabel("Address-3");
+        JLabel lblAddress_1 = new JLabel("收件地址");
         lblAddress_1.setHorizontalAlignment(SwingConstants.CENTER);
         lblAddress_1.setBounds(36, 123, 72, 15);
         customerInfoPanel.add(lblAddress_1);
 
-        tfAddress3 = new JTextField();
-        tfAddress3.setEditable(false);
-        tfAddress3.setColumns(10);
-        tfAddress3.setBounds(118, 120, 246, 21);
-        customerInfoPanel.add(tfAddress3);
+        tfRecipientFullAddress = new JTextField();
+        tfRecipientFullAddress.setEditable(false);
+        tfRecipientFullAddress.setColumns(10);
+        tfRecipientFullAddress.setBounds(118, 120, 600, 21);
+        customerInfoPanel.add(tfRecipientFullAddress);
 
-        JLabel lblAddress_2 = new JLabel("Address-4");
-        lblAddress_2.setHorizontalAlignment(SwingConstants.CENTER);
-        lblAddress_2.setBounds(425, 123, 72, 15);
-        customerInfoPanel.add(lblAddress_2);
-
-        tfAddress4 = new JTextField();
-        tfAddress4.setEditable(false);
-        tfAddress4.setColumns(10);
-        tfAddress4.setBounds(507, 120, 246, 21);
-        customerInfoPanel.add(tfAddress4);
 
         JPanel orderItemsInfoPanel = new JPanel();
         tabbedPane.addTab("订单详细信息", null, orderItemsInfoPanel, null);
@@ -432,18 +382,20 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
 
         orderItemsInfoTable = new JTable();
 
-        lazadaOrderItemsInfoTableModel = new LazadaOrderItemsInfoTableModel(lazadaOrderItemsInfos);
-        orderItemsInfoTable.setModel(lazadaOrderItemsInfoTableModel);
+        shopeeOrderItemsInfoTableModel = new ShopeeOrderItemsInfoTableModel(shopeeOrderItemsInfoList);
+        orderItemsInfoTable.setModel(shopeeOrderItemsInfoTableModel);
 
         // 设置列宽
         orderItemsInfoTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        orderItemsInfoTable.getColumnModel().getColumn(1).setPreferredWidth(140);
-        orderItemsInfoTable.getColumnModel().getColumn(2).setPreferredWidth(160);
-        orderItemsInfoTable.getColumnModel().getColumn(3).setPreferredWidth(400);
-        orderItemsInfoTable.getColumnModel().getColumn(4).setPreferredWidth(110);
-        orderItemsInfoTable.getColumnModel().getColumn(5).setPreferredWidth(110);
-        orderItemsInfoTable.getColumnModel().getColumn(6).setPreferredWidth(300);
-        orderItemsInfoTable.getColumnModel().getColumn(7).setPreferredWidth(200);
+        orderItemsInfoTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+        orderItemsInfoTable.getColumnModel().getColumn(2).setPreferredWidth(300);
+        orderItemsInfoTable.getColumnModel().getColumn(3).setPreferredWidth(100);
+        orderItemsInfoTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+        orderItemsInfoTable.getColumnModel().getColumn(5).setPreferredWidth(200);
+        orderItemsInfoTable.getColumnModel().getColumn(6).setPreferredWidth(100);
+        orderItemsInfoTable.getColumnModel().getColumn(7).setPreferredWidth(80);
+        orderItemsInfoTable.getColumnModel().getColumn(8).setPreferredWidth(80);
+        orderItemsInfoTable.getColumnModel().getColumn(9).setPreferredWidth(80);
         orderItemsInfoTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         // 列的顺序不可拖动
         orderItemsInfoTable.getTableHeader().setReorderingAllowed(false);
@@ -452,36 +404,6 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         // 只可以选择列
         orderItemsInfoTable.setRowSelectionAllowed(true);
         orderItemsInfoTable.setColumnSelectionAllowed(false);
-        // 双击事件
-        orderItemsInfoTable.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    if (lazadaOrderItemsInfoJFrame != null) {
-                        lazadaOrderItemsInfoJFrame.dispose();
-                    }
-                    int rowIndex = orderItemsInfoTable.rowAtPoint(e.getPoint());
-                    lazadaOrderItemsInfoJFrame = new LazadaOrderItemsInfoJFrame(lazadaOrderItemsInfos.get(rowIndex));
-                    lazadaOrderItemsInfoJFrame.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
 
         JScrollPane scrollPane = new JScrollPane(orderItemsInfoTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -502,8 +424,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
 
         purchaseInfoTable = new JTable();
 
-        lazadaPurchaseOrderInfoTableModel = new LazadaPurchaseOrderInfoTableModel(purchaseOrderInfos);
-        purchaseInfoTable.setModel(lazadaPurchaseOrderInfoTableModel);
+        shopeePurchaseOrderInfoTableModel = new ShopeePurchaseOrderInfoTableModel(shopeePurchaseOrderInfoList);
+        purchaseInfoTable.setModel(shopeePurchaseOrderInfoTableModel);
 
         // 设置列宽
         purchaseInfoTable.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -529,19 +451,19 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    if (lazadaPurchaseOrderInfoDetailJFrame != null) {
-                        lazadaPurchaseOrderInfoDetailJFrame.removeWindowListener(purchaseOrderInfoDetailJFrameListener);
-                        lazadaPurchaseOrderInfoDetailJFrame.dispose();
-                        lazadaPurchaseOrderInfoDetailJFrame = null;
+                    if (shopeePurchaseOrderInfoDetailJFrame != null) {
+                        shopeePurchaseOrderInfoDetailJFrame.removeWindowListener(purchaseOrderInfoDetailJFrameListener);
+                        shopeePurchaseOrderInfoDetailJFrame.dispose();
+                        shopeePurchaseOrderInfoDetailJFrame = null;
                     }
 
                     int rowIndex = purchaseInfoTable.rowAtPoint(e.getPoint());
-                    PurchaseOrderInfo purchaseOrderInfo = purchaseOrderInfos.get(rowIndex);
+                    ShopeePurchaseOrderInfo purchaseOrderInfo = shopeePurchaseOrderInfoList.get(rowIndex);
 
-                    lazadaPurchaseOrderInfoDetailJFrame = new LazadaPurchaseOrderInfoDetailJFrame(ViewType.SHOW, purchaseOrderInfo,
-                            lazadaOrderItemsInfos);
-                    lazadaPurchaseOrderInfoDetailJFrame.addWindowListener(purchaseOrderInfoDetailJFrameListener);
-                    lazadaPurchaseOrderInfoDetailJFrame.setVisible(true);
+                    shopeePurchaseOrderInfoDetailJFrame = new ShopeePurchaseOrderInfoDetailJFrame(ViewType.SHOW, purchaseOrderInfo,
+                            shopeeOrderItemsInfoList);
+                    shopeePurchaseOrderInfoDetailJFrame.addWindowListener(purchaseOrderInfoDetailJFrameListener);
+                    shopeePurchaseOrderInfoDetailJFrame.setVisible(true);
                 }
             }
 
@@ -677,103 +599,93 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     }
 
     private void initData() {
-        if (lazadaOrderInfo != null) {
-            ExchangeRate exchangeRate = lazadaOrderInfo.getExchangeRate();
-            tfShopName.setText(lazadaOrderInfo.getLazadaShopInfo().getShopName());
-            tfLazadaOrderId.setText(String.valueOf(lazadaOrderInfo.getLazadaOrderId()));
-            tfOrderStatus.setText(lazadaOrderInfo.getOrderStatus());
-            tfOrderCreateTime
-                    .setText(DateUtils.dateToStr(lazadaOrderInfo.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
-            float orderTotalPrice = CalculateUtils.convertPriceToRMB(lazadaOrderInfo.getPrice(),
-                    exchangeRate.getExchangeRate());
-            tfOrderTotalPrice.setText(String.valueOf(orderTotalPrice));
-            tfPurchaseTotalPrice.setText("0.00");
+        ExchangeRate exchangeRate = shopeeOrderInfo.getExchangeRate();
 
-            // 填充汇率数据
+        tfShopId.setText(String.valueOf(shopeeOrderInfo.getShopeeShopInfo().getShopId()));
+        tfShopName.setText(shopeeOrderInfo.getShopeeShopInfo().getShopName());
+        tfOrderSn.setText(shopeeOrderInfo.getOrderSn());
+        tfOrderStatus.setText(shopeeOrderInfo.getOrderStatus());
+        tfOrderCreateTime.setText(DateUtils.dateToStr(shopeeOrderInfo.getCreateTime(), "yyyy-MM-dd HH:mm:ss"));
+        tfDataToShip.setText(DateUtils.dateToStr(shopeeOrderInfo.getDateToShip(), "yyyy-MM-dd"));
+
+        String orderTotalPrice = String.format("%.2f外币", shopeeOrderInfo.getTotalAmount());
+        if (exchangeRate != null) {
+            orderTotalPrice = String.valueOf(CalculateUtils.convertPriceToRMB(shopeeOrderInfo.getTotalAmount(), exchangeRate.getExchangeRate()));
+        }
+        tfOrderTotalPrice.setText(orderTotalPrice);
+
+        String orderEscrowAmount = String.format("%.2f外币", shopeeOrderInfo.getEscrowAmount());
+        if (exchangeRate != null) {
+            orderEscrowAmount = String.valueOf(CalculateUtils.convertPriceToRMB(shopeeOrderInfo.getEscrowAmount(), exchangeRate.getExchangeRate()));
+        }
+        tfEscrowAmount.setText(orderEscrowAmount);
+
+        tfPurchaseTotalPrice.setText("0.00");
+
+        // 填充汇率数据
+        if (exchangeRate != null) {
             String rate = exchangeRate.getExchangeRate() + "(" + exchangeRate.getCountryCode() + "-"
                     + DateUtils.dateToStr(exchangeRate.getDate(), "yyyy-MM-dd") + ")";
             cbExchange.addItem(rate);
             cbExchange.setSelectedIndex(0);
+        }
 
-            tfLazadaOrderRemark.setText(lazadaOrderInfo.getLazadaOrderRemarks());
-            tfRemark.setText(lazadaOrderInfo.getRemarks());
-            tfFirstName.setText(lazadaOrderInfo.getAddressShippingFirstName());
-            tfLastName.setText(lazadaOrderInfo.getAddressShippingLastName());
-            tfPhone1.setText(lazadaOrderInfo.getAddressShippingPhone1());
-            tfPhone2.setText(lazadaOrderInfo.getAddressShippingPhone2());
-            tfAddress1.setText(lazadaOrderInfo.getAddressShippingAddress1());
-            tfAddress2.setText(lazadaOrderInfo.getAddressShippingAddress2());
-            tfCustomerEmail.setText(lazadaOrderInfo.getAddressShippingCustomerEmail());
-            tfCity.setText(lazadaOrderInfo.getAddressShippingCity());
-            tfPostCode.setText(lazadaOrderInfo.getAddressShippingPostCode());
-            tfPhone2.setText(lazadaOrderInfo.getAddressShippingPhone2());
-            tfPhone2.setText(lazadaOrderInfo.getAddressShippingPhone2());
-            tfPhone2.setText(lazadaOrderInfo.getAddressShippingPhone2());
-            tfPhone2.setText(lazadaOrderInfo.getAddressShippingPhone2());
-            tfOverseasExpress.setText(lazadaOrderInfo.getOverseasExpressNumber());
-            btnEditOverseasExpressPrice.setText("编辑数据");
-            tfOverseasExpressPrice.setEditable(false);
-            tfOverseasExpressPrice.setText(String.format("%.2f", lazadaOrderInfo.getOverseasExpressPrice()));
-            getLazadaOrderItemsInfoFromServer();
-            getPurchaseOrderInfoFromServer();
+        tfMessageToSeller.setText(shopeeOrderInfo.getMessageToSeller());
+        tfShopeeOrderNote.setText(shopeeOrderInfo.getNote());
+        tfRemark.setText(shopeeOrderInfo.getRemarks());
 
-            if (tfOrderStatus.getText().equals(OrderBean.Status.Pending.getStatus())) {
-                btnChangeOrderStatus.setEnabled(true);
-            } else {
-                btnChangeOrderStatus.setEnabled(false);
-            }
-            if (!TextUtils.isEmpty(lazadaOrderInfo.getOverseasExpressNumber()) && lazadaOrderInfo.isDelivery()) {
-                cbIsDelivery.setSelected(true);
-                btnUpdateOrderDeliveryStatus.setEnabled(false);
-            } else {
-                cbIsDelivery.setSelected(false);
-                btnUpdateOrderDeliveryStatus.setEnabled(true);
-            }
+        tfRecipientName.setText(shopeeOrderInfo.getRecipientName());
+        tfRecipientPhone.setText(shopeeOrderInfo.getRecipientPhone());
+        tfRecipientCountry.setText(shopeeOrderInfo.getRecipientCountry());
+        tfRecipientZipCode.setText(shopeeOrderInfo.getRecipientZipCode());
+        tfRecipientFullAddress.setText(shopeeOrderInfo.getRecipientFullAddress());
+
+        tfOverseasExpress.setText(shopeeOrderInfo.getTrackingNo());
+        btnEditOverseasExpressPrice.setText("编辑数据");
+        tfOverseasExpressPrice.setEditable(false);
+        tfOverseasExpressPrice.setText(String.format("%.2f", shopeeOrderInfo.getOverseasExpressPrice()));
+        getOrderItemsInfoFromServer();
+        getPurchaseOrderInfoFromServer();
+
+        if (shopeeOrderInfo.isDelivery()) {
+            cbIsDelivery.setSelected(true);
+            btnUpdateOrderDeliveryStatus.setEnabled(false);
+        } else {
+            cbIsDelivery.setSelected(false);
+            btnUpdateOrderDeliveryStatus.setEnabled(true);
         }
     }
 
     private void initClickEvent() {
-        btnUpdateOrderDeliveryStatus.addActionListener(e ->
-                updateLazadaOrderInfoIsDelivery(true)
-        );
-        btnRefreshOrderInfo.addActionListener(e -> refreshLazadaOrderInfo());
-        btnChangeOrderStatus.addActionListener(e -> {
-            if (lazadaOrderInfoChooseShipmentProvidersJFrame != null) {
-                lazadaOrderInfoChooseShipmentProvidersJFrame.dispose();
-                lazadaOrderInfoChooseShipmentProvidersJFrame = null;
-            }
-
-            lazadaOrderInfoChooseShipmentProvidersJFrame = new LazadaOrderInfoChooseShipmentProvidersJFrame(
-                    lazadaOrderInfo);
-            lazadaOrderInfoChooseShipmentProvidersJFrame.setVisible(true);
-        });
+        btnUpdateOrderDeliveryStatus.addActionListener(e -> updateOrderInfoIsDelivery(true));
+        btnRefreshOrderInfo.addActionListener(e -> refreshOrderInfo());
         btnEditOrderInfoData.addActionListener(e -> {
             if ("编辑数据".equals(btnEditOrderInfoData.getText())) {
                 tfRemark.setEditable(true);
                 btnEditOrderInfoData.setText("保存数据");
             } else {
                 btnEditOrderInfoData.setText("编辑数据");
-                if (!tfRemark.getText().equals(lazadaOrderInfo.getRemarks())) {
-                    updateLazadaOrderInfoRemark();
+                if (!tfRemark.getText().equals(shopeeOrderInfo.getRemarks())) {
+                    updateOrderInfoRemark();
                 } else {
                     tfRemark.setEditable(false);
                 }
             }
         });
-        btnSyncOrderData.addActionListener(e -> syncLazadaOrderInfo());
-        btnRefreshOrderItemInfo.addActionListener(e -> getLazadaOrderItemsInfoFromServer());
+        btnSyncOrderData.addActionListener(e -> syncOrderInfo());
+        btnRefreshOrderItemInfo.addActionListener(e -> getOrderItemsInfoFromServer());
         btnRefreshPurchaseInfo.addActionListener(e -> getPurchaseOrderInfoFromServer());
         btnAddPurchaseInfo.addActionListener(e -> {
-            if (lazadaPurchaseOrderInfoDetailJFrame != null) {
-                lazadaPurchaseOrderInfoDetailJFrame.removeWindowListener(purchaseOrderInfoDetailJFrameListener);
-                lazadaPurchaseOrderInfoDetailJFrame.dispose();
-                lazadaPurchaseOrderInfoDetailJFrame = null;
+            if (shopeePurchaseOrderInfoDetailJFrame != null) {
+                shopeePurchaseOrderInfoDetailJFrame.removeWindowListener(purchaseOrderInfoDetailJFrameListener);
+                shopeePurchaseOrderInfoDetailJFrame.dispose();
+                shopeePurchaseOrderInfoDetailJFrame = null;
             }
 
-            lazadaPurchaseOrderInfoDetailJFrame = new LazadaPurchaseOrderInfoDetailJFrame(ViewType.SAVE, null,
-                    lazadaOrderItemsInfos);
-            lazadaPurchaseOrderInfoDetailJFrame.addWindowListener(purchaseOrderInfoDetailJFrameListener);
-            lazadaPurchaseOrderInfoDetailJFrame.setVisible(true);
+            shopeePurchaseOrderInfoDetailJFrame = new ShopeePurchaseOrderInfoDetailJFrame(ViewType.SAVE, null,
+                    shopeeOrderItemsInfoList);
+            shopeePurchaseOrderInfoDetailJFrame.addWindowListener(purchaseOrderInfoDetailJFrameListener);
+            shopeePurchaseOrderInfoDetailJFrame.setVisible(true);
         });
         btnEditOverseasExpressPrice.addActionListener(e -> {
             if (tfOverseasExpressPrice.isEditable()) {
@@ -781,7 +693,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
                 try {
                     float overseasExpressPrice = Float.valueOf(tfOverseasExpressPrice.getText().trim());
                     tfOverseasExpressPrice.setText(String.format("%.2f", overseasExpressPrice));
-                    if (overseasExpressPrice == lazadaOrderInfo.getOverseasExpressPrice()) {
+                    if (overseasExpressPrice == shopeeOrderInfo.getOverseasExpressPrice()) {
                         tfOverseasExpressPrice.setEditable(false);
                         btnEditOverseasExpressPrice.setText("编辑数据");
                         return;
@@ -790,7 +702,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
                 } catch (NumberFormatException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null, "请输入正确的金额", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
-                    tfOverseasExpressPrice.setText(String.format("%.2f", lazadaOrderInfo.getOverseasExpressPrice()));
+                    tfOverseasExpressPrice.setText(String.format("%.2f", shopeeOrderInfo.getOverseasExpressPrice()));
                 }
             } else {
                 // 启动编辑模式
@@ -811,23 +723,20 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         });
     }
 
-    private void refreshLazadaOrderInfo() {
+    private void refreshOrderInfo() {
         btnRefreshOrderInfo.setEnabled(false);
-        btnChangeOrderStatus.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
-        Call<LazadaOrderInfo> call = request.getById(lazadaOrderInfo.getId());
-        call.enqueue(new Callback<LazadaOrderInfo>() {
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+        Call<ShopeeOrderInfo> call = request.getByOrderSn(shopeeOrderInfo.getOrderSn());
+        call.enqueue(new Callback<ShopeeOrderInfo>() {
             @Override
-            public void onResponse(Call<LazadaOrderInfo> call, Response<LazadaOrderInfo> response) {
+            public void onResponse(Call<ShopeeOrderInfo> call, Response<ShopeeOrderInfo> response) {
                 btnRefreshOrderInfo.setEnabled(true);
-                btnChangeOrderStatus.setEnabled(true);
                 btnSyncOrderData.setEnabled(true);
                 btnEditOrderInfoData.setEnabled(true);
                 if (response.code() == 200 && response.body() != null) {
-                    lazadaOrderInfo = response.body();
+                    shopeeOrderInfo = response.body();
                     initData();
                 } else {
                     JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
@@ -835,9 +744,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
             }
 
             @Override
-            public void onFailure(Call<LazadaOrderInfo> call, Throwable throwable) {
+            public void onFailure(Call<ShopeeOrderInfo> call, Throwable throwable) {
                 btnRefreshOrderInfo.setEnabled(true);
-                btnChangeOrderStatus.setEnabled(true);
                 btnSyncOrderData.setEnabled(true);
                 btnEditOrderInfoData.setEnabled(true);
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
@@ -849,19 +757,17 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     /**
      * 手动同步订单数据
      */
-    private void syncLazadaOrderInfo() {
-        btnRefreshOrderInfo.setEnabled(false);
-        btnChangeOrderStatus.setEnabled(false);
+    private void syncOrderInfo() {
+        // FIXME: 2019/2/15 
+       /* btnRefreshOrderInfo.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
-        Call<LazadaOrderInfo> call = request.syncLazadaOrderInfo(lazadaOrderInfo.getId());
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
+        Call<LazadaOrderInfo> call = request.syncOrderInfo(lazadaOrderInfo.getId());
         call.enqueue(new Callback<LazadaOrderInfo>() {
             @Override
             public void onResponse(Call<LazadaOrderInfo> call, Response<LazadaOrderInfo> response) {
                 btnRefreshOrderInfo.setEnabled(true);
-                btnChangeOrderStatus.setEnabled(true);
                 btnSyncOrderData.setEnabled(true);
                 btnEditOrderInfoData.setEnabled(true);
                 if (response.code() == 200 && response.body() != null) {
@@ -877,44 +783,12 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
             @Override
             public void onFailure(Call<LazadaOrderInfo> call, Throwable throwable) {
                 btnRefreshOrderInfo.setEnabled(true);
-                btnChangeOrderStatus.setEnabled(true);
                 btnSyncOrderData.setEnabled(true);
                 btnEditOrderInfoData.setEnabled(true);
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
             }
-        });
-    }
-
-    private void getLazadaOrderItemsInfoFromServer() {
-        btnRefreshOrderItemInfo.setEnabled(false);
-        LazadaOrderItemRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderItemRequest.class);
-        Call<List<LazadaOrderItemsInfo>> call = request.getByLazadaOrderInfo(lazadaOrderInfo.getId());
-        call.enqueue(new Callback<List<LazadaOrderItemsInfo>>() {
-            @Override
-            public void onResponse(Call<List<LazadaOrderItemsInfo>> call,
-                                   Response<List<LazadaOrderItemsInfo>> response) {
-                btnRefreshOrderItemInfo.setEnabled(true);
-                if (response.code() == 200) {
-                    lazadaOrderItemsInfos.clear();
-                    lazadaOrderItemsInfos.addAll(response.body());
-                    tfOrderItemsSize.setText(String.valueOf(lazadaOrderItemsInfos.size()));
-                    orderItemsInfoTable.validate();
-                    orderItemsInfoTable.updateUI();
-                } else {
-                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LazadaOrderItemsInfo>> call, Throwable throwable) {
-                btnRefreshOrderItemInfo.setEnabled(true);
-                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
-                        JOptionPane.WARNING_MESSAGE);
-                throwable.printStackTrace();
-            }
-        });
+        });*/
     }
 
     /**
@@ -923,17 +797,16 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     private void getPurchaseOrderInfoFromServer() {
         btnRefreshPurchaseInfo.setEnabled(false);
         btnAddPurchaseInfo.setEnabled(false);
-        PurchaseOrderInfoRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(PurchaseOrderInfoRequest.class);
-        Call<List<PurchaseOrderInfo>> call = request.getByLazadaOrderInfo(lazadaOrderInfo.getId());
-        call.enqueue(new Callback<List<PurchaseOrderInfo>>() {
+        ShopeePurchaseRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeePurchaseRequest.class);
+        Call<List<ShopeePurchaseOrderInfo>> call = request.getByShopeeOrderInfo(shopeeOrderInfo.getOrderSn());
+        call.enqueue(new Callback<List<ShopeePurchaseOrderInfo>>() {
             @Override
-            public void onResponse(Call<List<PurchaseOrderInfo>> call, Response<List<PurchaseOrderInfo>> response) {
+            public void onResponse(Call<List<ShopeePurchaseOrderInfo>> call, Response<List<ShopeePurchaseOrderInfo>> response) {
                 btnRefreshPurchaseInfo.setEnabled(true);
                 btnAddPurchaseInfo.setEnabled(true);
                 if (response.code() == 200) {
-                    purchaseOrderInfos.clear();
-                    purchaseOrderInfos.addAll(response.body());
+                    shopeePurchaseOrderInfoList.clear();
+                    shopeePurchaseOrderInfoList.addAll(response.body());
                     purchaseInfoTable.validate();
                     purchaseInfoTable.updateUI();
                     // 计算页面数据
@@ -947,9 +820,37 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
             }
 
             @Override
-            public void onFailure(Call<List<PurchaseOrderInfo>> call, Throwable throwable) {
+            public void onFailure(Call<List<ShopeePurchaseOrderInfo>> call, Throwable throwable) {
                 btnRefreshPurchaseInfo.setEnabled(true);
                 btnAddPurchaseInfo.setEnabled(true);
+                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
+                        JOptionPane.WARNING_MESSAGE);
+                throwable.printStackTrace();
+            }
+        });
+    }
+
+    private void getOrderItemsInfoFromServer() {
+        btnRefreshOrderItemInfo.setEnabled(false);
+        ShopeeOrderItemRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderItemRequest.class);
+        Call<List<ShopeeOrderItemsInfo>> call = request.getByShopeeOrderInfo(shopeeOrderInfo.getOrderSn());
+        call.enqueue(new Callback<List<ShopeeOrderItemsInfo>>() {
+            @Override
+            public void onResponse(Call<List<ShopeeOrderItemsInfo>> call, Response<List<ShopeeOrderItemsInfo>> response) {
+                btnRefreshOrderItemInfo.setEnabled(true);
+                if (response.code() == 200) {
+                    shopeeOrderItemsInfoList.clear();
+                    shopeeOrderItemsInfoList.addAll(response.body());
+                    orderItemsInfoTable.validate();
+                    orderItemsInfoTable.updateUI();
+                } else {
+                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ShopeeOrderItemsInfo>> call, Throwable throwable) {
+                btnRefreshOrderItemInfo.setEnabled(true);
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
                 throwable.printStackTrace();
@@ -966,9 +867,8 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
         btnRefreshOrderInfo.setEnabled(false);
         btnSyncOrderData.setEnabled(false);
         btnEditOrderInfoData.setEnabled(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
-        Call<String> call = request.updateOverseasExpressPrice(lazadaOrderInfo.getId(),
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+        Call<String> call = request.updateOverseasExpressPrice(shopeeOrderInfo.getOrderSn(),
                 Float.valueOf(tfOverseasExpressPrice.getText().trim()));
         call.enqueue(new Callback<String>() {
             @Override
@@ -982,7 +882,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
                     if (response.body().equals("Updated is successful:true")) {
                         tfOverseasExpressPrice.setEditable(false);
                         btnEditOverseasExpressPrice.setText("编辑数据");
-                        lazadaOrderInfo.setOverseasExpressPrice(Float.valueOf(tfOverseasExpressPrice.getText().trim()));
+                        shopeeOrderInfo.setOverseasExpressPrice(Float.valueOf(tfOverseasExpressPrice.getText().trim()));
                         calculateCostOfSales();
                         calculateProfit();
                         calculateProfitRate();
@@ -1011,17 +911,16 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     /**
      * 更新订单出货状态
      */
-    private void updateLazadaOrderInfoIsDelivery(final boolean isDelivery) {
+    private void updateOrderInfoIsDelivery(final boolean isDelivery) {
         btnUpdateOrderDeliveryStatus.setEnabled(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
-        Call<String> call = request.updateLazadaOrderInfoIsDelivery(lazadaOrderInfo.getId(), isDelivery);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+        Call<String> call = request.updateDeliveryStatus(shopeeOrderInfo.getOrderSn(), isDelivery);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.code() == 200) {
                     if (response.body().equals("Updated is successful:true")) {
-                        lazadaOrderInfo.setDelivery(isDelivery);
+                        shopeeOrderInfo.setDelivery(isDelivery);
                         cbIsDelivery.setSelected(isDelivery);
                         JOptionPane.showMessageDialog(null, "更新成功", "INFORMATION_MESSAGE",
                                 JOptionPane.INFORMATION_MESSAGE);
@@ -1045,23 +944,23 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     /**
      * 更新订单备注
      */
-    private void updateLazadaOrderInfoRemark() {
+    private void updateOrderInfoRemark() {
         btnEditOrderInfoData.setEnabled(false);
         tfRemark.setEditable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
-        Call<String> call = request.updateLazadaOrderInfoRemark(lazadaOrderInfo.getId(), tfRemark.getText());
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+        Call<String> call = request.updateRemark(shopeeOrderInfo.getOrderSn(), tfRemark.getText());
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 btnEditOrderInfoData.setEnabled(true);
                 if (response.code() == 200) {
                     if (response.body().equals("Updated is successful:true")) {
-                        lazadaOrderInfo.setRemarks(tfRemark.getText());
+                        shopeeOrderInfo.setRemarks(tfRemark.getText());
                         JOptionPane.showMessageDialog(null, "更新成功", "INFORMATION_MESSAGE",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
-                    tfRemark.setText(lazadaOrderInfo.getRemarks());
+                    tfRemark.setText(shopeeOrderInfo.getRemarks());
                     JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
                 }
             }
@@ -1069,7 +968,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
             @Override
             public void onFailure(Call<String> call, Throwable throwable) {
                 btnEditOrderInfoData.setEnabled(true);
-                tfRemark.setText(lazadaOrderInfo.getRemarks());
+                tfRemark.setText(shopeeOrderInfo.getRemarks());
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
                 throwable.printStackTrace();
@@ -1082,7 +981,7 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
      */
     private void calculatePurchaseTotalPrice() {
         float totalPrice = 0.00f;
-        for (PurchaseOrderInfo purchaseOrderInfo : purchaseOrderInfos) {
+        for (ShopeePurchaseOrderInfo purchaseOrderInfo : shopeePurchaseOrderInfoList) {
             totalPrice += purchaseOrderInfo.getTotalPrice();
         }
         tfPurchaseTotalPrice.setText(String.valueOf(totalPrice));
@@ -1094,16 +993,21 @@ public class LazadaOrderInfoDetailJFrame extends JFrame {
     private void calculateCostOfSales() {
         float purchaseTotalPrice = Float.valueOf(tfPurchaseTotalPrice.getText());
         lbCostOfSales.setText(String.format("=  采购成本（%.2f）+ 国际运费（%.2f）", purchaseTotalPrice,
-                lazadaOrderInfo.getOverseasExpressPrice()));
-        tfCostOfSales.setText(String.valueOf(purchaseTotalPrice + lazadaOrderInfo.getOverseasExpressPrice()));
+                shopeeOrderInfo.getOverseasExpressPrice()));
+        tfCostOfSales.setText(String.format("%.2f", purchaseTotalPrice + shopeeOrderInfo.getOverseasExpressPrice()));
     }
 
     /**
      * 计算利润
      */
     private void calculateProfit() {
-        ExchangeRate exchangeRate = lazadaOrderInfo.getExchangeRate();
-        float orderTotalPrice = CalculateUtils.convertPriceToRMB(lazadaOrderInfo.getPrice(),
+        ExchangeRate exchangeRate = shopeeOrderInfo.getExchangeRate();
+        if (exchangeRate == null) {
+            lbProfit.setText("订单无汇率，先关联汇率后才能计算");
+            tfProfit.setText("0.00");
+            return;
+        }
+        float orderTotalPrice = CalculateUtils.convertPriceToRMB(shopeeOrderInfo.getEscrowAmount(),
                 exchangeRate.getExchangeRate());
         float calculationCoefficient = Float.valueOf(tfCalculationCoefficient.getText().trim());
         float sellingCost = Float.valueOf(tfCostOfSales.getText().trim());

@@ -20,7 +20,7 @@ public class PersonInfoTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        return columnNames[col].toString();
+        return columnNames[col];
     }
 
     @Override

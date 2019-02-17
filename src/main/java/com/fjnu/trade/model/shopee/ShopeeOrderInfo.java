@@ -40,7 +40,7 @@ public class ShopeeOrderInfo {
 
     private float overseasExpressPrice;
 
-    private boolean isDelivery;
+    private boolean delivery;
 
     private String remarks;
 
@@ -264,11 +264,11 @@ public class ShopeeOrderInfo {
     }
 
     public boolean isDelivery() {
-        return isDelivery;
+        return delivery;
     }
 
     public void setDelivery(boolean delivery) {
-        isDelivery = delivery;
+        this.delivery = delivery;
     }
 
     public String getRemarks() {

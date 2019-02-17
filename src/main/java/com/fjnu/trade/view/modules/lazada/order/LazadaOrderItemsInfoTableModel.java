@@ -1,11 +1,10 @@
 package com.fjnu.trade.view.modules.lazada.order;
 
-import java.util.List;
-
-import javax.swing.table.AbstractTableModel;
-
 import com.fjnu.common.utils.CalculateUtils;
 import com.fjnu.trade.model.lazada.LazadaOrderItemsInfo;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.List;
 
 public class LazadaOrderItemsInfoTableModel extends AbstractTableModel {
 
@@ -21,7 +20,7 @@ public class LazadaOrderItemsInfoTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        return columnNames[col].toString();
+        return columnNames[col];
     }
 
     @Override
