@@ -81,4 +81,37 @@ public interface ShopeeOrderRequest {
      */
     @PUT("shopee/order/{orderSn}/update_overseas_express_price")
     Call<String> updateOverseasExpressPrice(@Path("orderSn") String orderSn, @Query("OverseasExpressPrice") float overseasExpressPrice);
+
+    /**
+     * 根据采购快递单号查询
+     *
+     * @param orderExpressNumber 采购快递单号
+     * @return
+     */
+    @GET("shopee/order/get_by_purchase_order_express_number")
+    Call<List<ShopeeOrderInfo>> getByPurchaseOrderExpressNumber(@Query("OrderExpressNumber") String orderExpressNumber);
+
+    /**
+     * 查询采购快递单号为空的订单
+     *
+     * @return
+     */
+    @GET("shopee/order/get_by_purchase_order_express_is_null")
+    Call<List<ShopeeOrderInfo>> getByPurchaseOrderExpressIsNull();
+
+    /**
+     * 查询采购快递单号为空的订单
+     *
+     * @return
+     */
+    @GET("shopee/order/get_by_order_delivery_status_is_false")
+    Call<List<ShopeeOrderInfo>> getByOrderDeliveryStatusIsFalse();
+
+    /**
+     * 查询采购快递单号为空的订单
+     *
+     * @return
+     */
+    @GET("shopee/order/get_by_purchase_order_third_party_order_id")
+    Call<List<ShopeeOrderInfo>> getByPurchaseOrderInfoThirdPartyOrderId(@Query("third_party_order_id") String thirdPartyOrderId);
 }

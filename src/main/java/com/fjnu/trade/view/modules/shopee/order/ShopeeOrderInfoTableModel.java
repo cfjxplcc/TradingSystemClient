@@ -15,7 +15,7 @@ public class ShopeeOrderInfoTableModel extends AbstractTableModel {
     private final String[] columnNames = {
             "行数", "Shopee店铺名", "订单Sn", "订单状态",
             "订单生成日期", "订单出货截止日期", "订单总金额(外币)", "订单进帐金额(外币)",
-            "买家留言", "备注(平台)", "Shopee平台快递编号"
+            "买家留言", "备注(平台)", "备注(公司内部)", "Shopee平台快递编号"
     };
 
     private List<ShopeeOrderInfo> data;
@@ -64,6 +64,8 @@ public class ShopeeOrderInfoTableModel extends AbstractTableModel {
             case 9:
                 return shopeeOrderInfo.getNote();
             case 10:
+                return shopeeOrderInfo.getRemarks();
+            case 11:
                 return shopeeOrderInfo.getTrackingNo();
             default:
                 return "";

@@ -38,7 +38,6 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
     private JButton btnQueryDataByThirdPartyOrderId;
     private JButton btnQueryOrderExpressNumber;
     private JButton btnQueryOrderDeliveryStatusIsFalse;
-    private JCheckBox checkboxFindByEmail;
 
     private ShopeeOrderInfoTableModel tableModel;
 
@@ -74,10 +73,6 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         cbShopeeShop.setBounds(63, 7, 150, 21);
         panel.add(cbShopeeShop);
         cbShopeeShop.addItem("正在获取店铺信息");
-
-        checkboxFindByEmail = new JCheckBox("账号关联");
-        checkboxFindByEmail.setBounds(218, 6, 80, 23);
-        panel.add(checkboxFindByEmail);
 
         JLabel label = new JLabel("订单状态：");
         label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -192,7 +187,8 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         table.getColumnModel().getColumn(7).setPreferredWidth(110);
         table.getColumnModel().getColumn(8).setPreferredWidth(130);
         table.getColumnModel().getColumn(9).setPreferredWidth(100);
-        table.getColumnModel().getColumn(10).setPreferredWidth(150);
+        table.getColumnModel().getColumn(10).setPreferredWidth(100);
+        table.getColumnModel().getColumn(11).setPreferredWidth(150);
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -223,7 +219,7 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         });
         btnQueryOrderExpressNumber.addActionListener(e -> {
             if (!TextUtils.isEmpty(tfOrderExpressNumber.getText().trim())) {
-                getByOrderExpressNumber(tfOrderExpressNumber.getText().trim());
+                getByPurchaseOrderExpressNumber(tfOrderExpressNumber.getText().trim());
             } else {
                 JOptionPane.showMessageDialog(null, "快递单号不能为空:", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
             }
@@ -238,13 +234,9 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             }
             getLazadaOrderInfoByPurchaseOrderInfoThirdPartyOrderId(tfThirdPartyOrderId.getText().trim());
         });
-        btnQueryExpressInNull.addActionListener(e -> getLazadaOrderInfoByPurchaseOrderInfoExpressIsNull());
+        btnQueryExpressInNull.addActionListener(e -> getByPurchaseOrderExpressIsNull());
         btnDataQuery.addActionListener(e -> {
-            if (cbShopeeShop.getSelectedIndex() != 0 && checkboxFindByEmail.isSelected()) {
-                getLazadaOrderInfoByEmail();
-            } else {
-                getShopeeOrderInfoFromServer();
-            }
+            getShopeeOrderInfoFromServer();
         });
         tfBeginTime.addMouseListener(new MouseAdapter() {
             @Override
@@ -388,33 +380,14 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         });
     }
 
-    private void getLazadaOrderInfoByEmail() {
-        // FIXME: 2019/2/15 
-        /*setAllComponentEnable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
+    private void getByPurchaseOrderExpressIsNull() {
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
 
-        String email = shopeeShopInfoList.get(cbShopeeShop.getSelectedIndex() - 1).getEmail();
-
-        String orderStatus = "";
-        if (!cbOrderStatus.getSelectedItem().toString().equals(ORDER_STATUS_ALL)) {
-            orderStatus = cbOrderStatus.getSelectedItem().toString();
-        }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        long beginTime = System.currentTimeMillis();
-        long endTime = System.currentTimeMillis();
-        try {
-            beginTime = simpleDateFormat.parse(tfBeginTime.getText() + " 00:00:00").getTime();
-            endTime = simpleDateFormat.parse(tfEndTime.getText() + " 24:00:00").getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Call<List<LazadaOrderInfo>> call = request.getByEmail(email, orderStatus,
-                String.valueOf(beginTime), String.valueOf(endTime));
-        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+        Call<List<ShopeeOrderInfo>> call = request.getByPurchaseOrderExpressIsNull();
+        call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
             @Override
-            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+            public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
                 setAllComponentEnable(true);
                 if (response.code() == 200) {
                     shopeeOrderInfoList.clear();
@@ -431,60 +404,23 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             }
 
             @Override
-            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+            public void onFailure(Call<List<ShopeeOrderInfo>> call, Throwable throwable) {
                 setAllComponentEnable(true);
                 throwable.printStackTrace();
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
             }
-        });*/
-    }
-
-    private void getLazadaOrderInfoByPurchaseOrderInfoExpressIsNull() {
-        // FIXME: 2019/2/15 
-      /*  setAllComponentEnable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
-
-        Call<List<LazadaOrderInfo>> call = request.getAllByPurchaseOrderInfoExpressIsNull();
-        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
-            @Override
-            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
-                setAllComponentEnable(true);
-                if (response.code() == 200) {
-                    shopeeOrderInfoList.clear();
-                    shopeeOrderInfoList.addAll(response.body());
-                    table.validate();
-                    table.updateUI();
-                    if (shopeeOrderInfoList.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "无数据", "INFORMATION_MESSAGE",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
-                setAllComponentEnable(true);
-                throwable.printStackTrace();
-                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        });*/
+        });
     }
 
     private void getOrderDeliveryStatusIsFalse() {
-        // FIXME: 2019/2/15 
-       /* setAllComponentEnable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
 
-        Call<List<LazadaOrderInfo>> call = request.getOrderDeliveryStatusIsFalse();
-        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+        Call<List<ShopeeOrderInfo>> call = request.getByOrderDeliveryStatusIsFalse();
+        call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
             @Override
-            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+            public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
                 setAllComponentEnable(true);
                 if (response.code() == 200) {
                     shopeeOrderInfoList.clear();
@@ -501,25 +437,23 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             }
 
             @Override
-            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+            public void onFailure(Call<List<ShopeeOrderInfo>> call, Throwable throwable) {
                 setAllComponentEnable(true);
                 throwable.printStackTrace();
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
             }
-        });*/
+        });
     }
 
     private void getLazadaOrderInfoByPurchaseOrderInfoThirdPartyOrderId(String id) {
-        // FIXME: 2019/2/15 
-       /* setAllComponentEnable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
 
-        Call<List<LazadaOrderInfo>> call = request.getAllByPurchaseOrderInfoThirdPartyOrderId(id);
-        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+        Call<List<ShopeeOrderInfo>> call = request.getByPurchaseOrderInfoThirdPartyOrderId(id);
+        call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
             @Override
-            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+            public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
                 setAllComponentEnable(true);
                 if (response.code() == 200) {
                     shopeeOrderInfoList.clear();
@@ -536,25 +470,23 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             }
 
             @Override
-            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+            public void onFailure(Call<List<ShopeeOrderInfo>> call, Throwable throwable) {
                 setAllComponentEnable(true);
                 throwable.printStackTrace();
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
             }
-        });*/
+        });
     }
 
-    private void getByOrderExpressNumber(String orderExpressNumber) {
-        // FIXME: 2019/2/15 
-        /*setAllComponentEnable(false);
-        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit()
-                .create(LazadaOrderRequest.class);
+    private void getByPurchaseOrderExpressNumber(String orderExpressNumber) {
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
 
-        Call<List<LazadaOrderInfo>> call = request.getByOrderExpressNumber(orderExpressNumber);
-        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+        Call<List<ShopeeOrderInfo>> call = request.getByPurchaseOrderExpressNumber(orderExpressNumber);
+        call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
             @Override
-            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+            public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
                 setAllComponentEnable(true);
                 if (response.code() == 200) {
                     shopeeOrderInfoList.clear();
@@ -571,13 +503,13 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             }
 
             @Override
-            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+            public void onFailure(Call<List<ShopeeOrderInfo>> call, Throwable throwable) {
                 setAllComponentEnable(true);
                 throwable.printStackTrace();
                 JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
                         JOptionPane.WARNING_MESSAGE);
             }
-        });*/
+        });
     }
 
     /**
