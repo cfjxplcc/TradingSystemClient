@@ -76,4 +76,9 @@ public interface LazadaOrderRequest {
     @PUT("lazada/order/{id}/sync")
     Call<LazadaOrderInfo> syncLazadaOrderInfo(@Path("id") String id);
 
+    @GET("lazada/order/get_by_order_number")
+    Call<List<LazadaOrderInfo>> getByOrderNumber(@Query("order_number") long orderNumber);
+
+    @GET("lazada/order/get_by_order_item_sku_and_delivery_is_false")
+    Call<List<LazadaOrderInfo>> getByItemSkuAndDeliveryIsFalse(@Query("sku") String sku);
 }

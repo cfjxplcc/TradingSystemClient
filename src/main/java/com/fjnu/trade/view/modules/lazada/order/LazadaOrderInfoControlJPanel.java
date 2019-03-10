@@ -14,12 +14,16 @@ import retrofit2.Response;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LazadaOrderInfoControlJPanel extends JPanel {
 
@@ -45,6 +49,9 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
     private List<LazadaShopInfo> lazadaShopInfoList = new ArrayList<>();
     private List<LazadaOrderInfo> lazadaOrderInfoList = new ArrayList<>();
     private JTextField tfOrderExpressNumber;
+    private JTextField tfOrderNumberOrSku;
+    private JButton btnSku;
+    private JButton btnQueryOrderNumber;
 
     /**
      * Create the panel.
@@ -175,6 +182,19 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
         separator.setBounds(0, 112, 1000, 1);
         panel.add(separator);
 
+        tfOrderNumberOrSku = new JTextField();
+        tfOrderNumberOrSku.setColumns(30);
+        tfOrderNumberOrSku.setBounds(407, 82, 160, 21);
+        panel.add(tfOrderNumberOrSku);
+
+        btnQueryOrderNumber = new JButton("根据Lazada订单号查询");
+        btnQueryOrderNumber.setBounds(575, 79, 177, 29);
+        panel.add(btnQueryOrderNumber);
+
+        btnSku = new JButton("根据商品SKU查询未出货订单");
+        btnSku.setBounds(765, 79, 200, 29);
+        panel.add(btnSku);
+
         JPanel panel_3 = new JPanel(new BorderLayout(0, 0));
         add(panel_3, BorderLayout.CENTER);
 
@@ -283,6 +303,16 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
+        btnQueryOrderNumber.addActionListener(e -> {
+            if (!isNumeric(tfOrderNumberOrSku.getText())) {
+                JOptionPane.showMessageDialog(LazadaOrderInfoControlJPanel.this, "Lazada订单号只能是数字", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            getLazadaOrderInfoByOrderNumber();
+        });
+        btnSku.addActionListener(e -> {
+            getLazadaOrderInfoByItemSkuAndDeliveryIsTrue();
+        });
     }
 
     private void setAllComponentEnable(boolean isEnable) {
@@ -296,6 +326,9 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
         btnQueryDataByThirdPartyOrderId.setEnabled(isEnable);
         btnQueryOrderDeliveryStatusIsFalse.setEnabled(isEnable);
         btnQueryOrderExpressNumber.setEnabled(isEnable);
+        tfOrderNumberOrSku.setEnabled(isEnable);
+        btnSku.setEnabled(isEnable);
+        btnQueryOrderNumber.setEnabled(isEnable);
     }
 
     private void getLazadaShopInfoFromServer() {
@@ -567,6 +600,71 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
         });
     }
 
+    private void getLazadaOrderInfoByOrderNumber() {
+        setAllComponentEnable(false);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
+
+        Call<List<LazadaOrderInfo>> call = request.getByOrderNumber(Long.parseLong(tfOrderNumberOrSku.getText()));
+        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+            @Override
+            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+                setAllComponentEnable(true);
+                if (response.code() == 200) {
+                    lazadaOrderInfoList.clear();
+                    lazadaOrderInfoList.addAll(response.body());
+                    table.validate();
+                    table.updateUI();
+                    if (lazadaOrderInfoList.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "无数据", "INFORMATION_MESSAGE",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+                setAllComponentEnable(true);
+                throwable.printStackTrace();
+                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+
+    private void getLazadaOrderInfoByItemSkuAndDeliveryIsTrue() {
+        setAllComponentEnable(false);
+        LazadaOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(LazadaOrderRequest.class);
+
+        Call<List<LazadaOrderInfo>> call = request.getByItemSkuAndDeliveryIsFalse(tfOrderNumberOrSku.getText());
+        call.enqueue(new Callback<List<LazadaOrderInfo>>() {
+            @Override
+            public void onResponse(Call<List<LazadaOrderInfo>> call, Response<List<LazadaOrderInfo>> response) {
+                setAllComponentEnable(true);
+                if (response.code() == 200) {
+                    lazadaOrderInfoList.clear();
+                    lazadaOrderInfoList.addAll(response.body());
+                    table.validate();
+                    table.updateUI();
+                    if (lazadaOrderInfoList.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "无数据", "INFORMATION_MESSAGE",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LazadaOrderInfo>> call, Throwable throwable) {
+                setAllComponentEnable(true);
+                throwable.printStackTrace();
+                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
 
     /**
      * @param isSuccessful
@@ -586,5 +684,17 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
     private String getTodayString() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return simpleDateFormat.format(new Date());
+    }
+
+    /**
+     * 利用正则表达式判断字符串是否是数字
+     *
+     * @param str
+     * @return
+     */
+    private boolean isNumeric(String str) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(str);
+        return isNum.matches();
     }
 }

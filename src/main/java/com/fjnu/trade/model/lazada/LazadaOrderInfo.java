@@ -49,7 +49,7 @@ public class LazadaOrderInfo {
     private String orderStatus;
 
     //    @Column(name = "CUSTOMER_FIRST_NAME")
-    private String customerFirstNmae;
+    private String customerFirstName;
 
     //    @Column(name = "CUSTOMER_LAST_NAME")
     private String customerLastName;
@@ -188,12 +188,12 @@ public class LazadaOrderInfo {
         this.orderStatus = orderStatus;
     }
 
-    public String getCustomerFirstNmae() {
-        return customerFirstNmae;
+    public String getCustomerFirstName() {
+        return customerFirstName;
     }
 
-    public void setCustomerFirstNmae(String customerFirstNmae) {
-        this.customerFirstNmae = customerFirstNmae;
+    public void setCustomerFirstName(String customerFirstName) {
+        this.customerFirstName = customerFirstName;
     }
 
     public String getCustomerLastName() {
