@@ -6,7 +6,7 @@
 
     <groupId>com.fjnu.tradingsystem</groupId>
     <artifactId>trading-system-client</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.2</version>
 
     <dependencies>
         <dependency>

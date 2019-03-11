@@ -7,7 +7,7 @@ public final class Constants {
 
     //-------------------------- 客户端版本部分 ----------------------------
     /** 客户端版本 */
-    public static final String CLIENT_VERSION = "v3.0.0";
+    public static final String CLIENT_VERSION = "v3.0.2";
     /** 是否是管理者模式（暂时区分管理员客户端和使用者客户端参数） */
     public static final boolean IS_MANAGER_MODEL = true;
 //    public static final boolean IS_MANAGER_MODEL = false;
