@@ -15,7 +15,7 @@ import java.util.List;
 public interface ShopeeOrderRequest {
 
     /**
-     * 根据订单id查询
+     * 根据订单sn查询
      *
      * @param orderSn
      * @return
@@ -114,4 +114,13 @@ public interface ShopeeOrderRequest {
      */
     @GET("shopee/order/get_by_purchase_order_third_party_order_id")
     Call<List<ShopeeOrderInfo>> getByPurchaseOrderInfoThirdPartyOrderId(@Query("third_party_order_id") String thirdPartyOrderId);
+
+    /**
+     * 根据订单商品sku查询未出货的订单数据
+     *
+     * @param sku
+     * @return
+     */
+    @GET("shopee/order/get_by_order_item_sku_and_delivery_is_false")
+    Call<List<ShopeeOrderInfo>> getByItemSkuAndDeliveryIsFalse(@Query("sku") String sku);
 }

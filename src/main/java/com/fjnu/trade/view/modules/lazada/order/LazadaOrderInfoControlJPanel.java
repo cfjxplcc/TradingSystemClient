@@ -41,6 +41,10 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
     private JButton btnQueryOrderExpressNumber;
     private JButton btnQueryOrderDeliveryStatusIsFalse;
     private JCheckBox checkboxFindByEmail;
+    private JTextField tfOrderExpressNumber;
+    private JTextField tfOrderNumberOrSku;
+    private JButton btnSku;
+    private JButton btnQueryOrderNumber;
 
     private LazadaOrderInfoTableModel tableModel;
 
@@ -48,10 +52,6 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
 
     private List<LazadaShopInfo> lazadaShopInfoList = new ArrayList<>();
     private List<LazadaOrderInfo> lazadaOrderInfoList = new ArrayList<>();
-    private JTextField tfOrderExpressNumber;
-    private JTextField tfOrderNumberOrSku;
-    private JButton btnSku;
-    private JButton btnQueryOrderNumber;
 
     /**
      * Create the panel.
@@ -304,13 +304,21 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
             }
         });
         btnQueryOrderNumber.addActionListener(e -> {
+            if (TextUtils.isEmpty(tfOrderNumberOrSku.getText())) {
+                JOptionPane.showMessageDialog(this, "请输入订单Sn", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             if (!isNumeric(tfOrderNumberOrSku.getText())) {
-                JOptionPane.showMessageDialog(LazadaOrderInfoControlJPanel.this, "Lazada订单号只能是数字", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Lazada订单号只能是数字", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             getLazadaOrderInfoByOrderNumber();
         });
         btnSku.addActionListener(e -> {
+            if (TextUtils.isEmpty(tfOrderNumberOrSku.getText())) {
+                JOptionPane.showMessageDialog(this, "请输入Sku", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             getLazadaOrderInfoByItemSkuAndDeliveryIsTrue();
         });
     }
@@ -326,6 +334,7 @@ public class LazadaOrderInfoControlJPanel extends JPanel {
         btnQueryDataByThirdPartyOrderId.setEnabled(isEnable);
         btnQueryOrderDeliveryStatusIsFalse.setEnabled(isEnable);
         btnQueryOrderExpressNumber.setEnabled(isEnable);
+        tfOrderExpressNumber.setEnabled(isEnable);
         tfOrderNumberOrSku.setEnabled(isEnable);
         btnSku.setEnabled(isEnable);
         btnQueryOrderNumber.setEnabled(isEnable);

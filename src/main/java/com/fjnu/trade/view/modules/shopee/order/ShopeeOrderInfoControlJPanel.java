@@ -38,6 +38,10 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
     private JButton btnQueryDataByThirdPartyOrderId;
     private JButton btnQueryOrderExpressNumber;
     private JButton btnQueryOrderDeliveryStatusIsFalse;
+    private JTextField tfOrderExpressNumber;
+    private JTextField tfOrderSnOrSku;
+    private JButton btnQueryOrderSn;
+    private JButton btnQuerySku;
 
     private ShopeeOrderInfoTableModel tableModel;
 
@@ -45,7 +49,6 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
 
     private List<ShopeeShopInfo> shopeeShopInfoList = new ArrayList<>();
     private List<ShopeeOrderInfo> shopeeOrderInfoList = new ArrayList<>();
-    private JTextField tfOrderExpressNumber;
 
     /**
      * Create the panel.
@@ -148,6 +151,19 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         btnQueryOrderDeliveryStatusIsFalse = new JButton("查询未出货订单");
         btnQueryOrderDeliveryStatusIsFalse.setBounds(205, 82, 133, 23);
         panel.add(btnQueryOrderDeliveryStatusIsFalse);
+
+        tfOrderSnOrSku = new JTextField();
+        tfOrderSnOrSku.setColumns(30);
+        tfOrderSnOrSku.setBounds(407, 82, 160, 21);
+        panel.add(tfOrderSnOrSku);
+
+        btnQueryOrderSn = new JButton("根据Shopee订单Sn查询");
+        btnQueryOrderSn.setBounds(575, 79, 177, 29);
+        panel.add(btnQueryOrderSn);
+
+        btnQuerySku = new JButton("根据商品SKU查询未出货订单");
+        btnQuerySku.setBounds(765, 79, 200, 29);
+        panel.add(btnQuerySku);
 
         JLabel label_1 = new JLabel("快递单号");
         label_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -279,6 +295,20 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
             public void mouseExited(MouseEvent e) {
             }
         });
+        btnQueryOrderSn.addActionListener(e -> {
+            if (TextUtils.isEmpty(tfOrderSnOrSku.getText())) {
+                JOptionPane.showMessageDialog(this, "请输入订单Sn", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            getByOrderSn(tfOrderSnOrSku.getText());
+        });
+        btnQuerySku.addActionListener(e -> {
+            if (TextUtils.isEmpty(tfOrderSnOrSku.getText())) {
+                JOptionPane.showMessageDialog(this, "请输入sku", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            getByItemSkuAndDeliveryIsFalse(tfOrderSnOrSku.getText());
+        });
     }
 
     private void setAllComponentEnable(boolean isEnable) {
@@ -292,6 +322,10 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         btnQueryDataByThirdPartyOrderId.setEnabled(isEnable);
         btnQueryOrderDeliveryStatusIsFalse.setEnabled(isEnable);
         btnQueryOrderExpressNumber.setEnabled(isEnable);
+        tfOrderExpressNumber.setEnabled(isEnable);
+        tfOrderSnOrSku.setEnabled(isEnable);
+        btnQueryOrderSn.setEnabled(isEnable);
+        btnQuerySku.setEnabled(isEnable);
     }
 
     private void getShopeeShopInfoFromServer() {
@@ -484,6 +518,74 @@ public class ShopeeOrderInfoControlJPanel extends JPanel {
         ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
 
         Call<List<ShopeeOrderInfo>> call = request.getByPurchaseOrderExpressNumber(orderExpressNumber);
+        call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
+            @Override
+            public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
+                setAllComponentEnable(true);
+                if (response.code() == 200) {
+                    shopeeOrderInfoList.clear();
+                    shopeeOrderInfoList.addAll(response.body());
+                    table.validate();
+                    table.updateUI();
+                    if (shopeeOrderInfoList.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "无数据", "INFORMATION_MESSAGE",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ShopeeOrderInfo>> call, Throwable throwable) {
+                setAllComponentEnable(true);
+                throwable.printStackTrace();
+                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+
+    private void getByOrderSn(String orderSn) {
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+
+        Call<ShopeeOrderInfo> call = request.getByOrderSn(orderSn);
+        call.enqueue(new Callback<ShopeeOrderInfo>() {
+            @Override
+            public void onResponse(Call<ShopeeOrderInfo> call, Response<ShopeeOrderInfo> response) {
+                setAllComponentEnable(true);
+                if (response.code() == 200) {
+                    shopeeOrderInfoList.clear();
+                    if (response.body() != null) {
+                        shopeeOrderInfoList.add(response.body());
+                    }
+                    table.validate();
+                    table.updateUI();
+                    if (shopeeOrderInfoList.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "无数据", "INFORMATION_MESSAGE",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "服务器异常", "WARNING_MESSAGE", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ShopeeOrderInfo> call, Throwable throwable) {
+                setAllComponentEnable(true);
+                throwable.printStackTrace();
+                JOptionPane.showMessageDialog(null, "发送请求失败:" + throwable.toString(), "WARNING_MESSAGE",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+
+    private void getByItemSkuAndDeliveryIsFalse(String sku) {
+        setAllComponentEnable(false);
+        ShopeeOrderRequest request = RetrofitManager.getInstance().getRetrofit().create(ShopeeOrderRequest.class);
+
+        Call<List<ShopeeOrderInfo>> call = request.getByItemSkuAndDeliveryIsFalse(sku);
         call.enqueue(new Callback<List<ShopeeOrderInfo>>() {
             @Override
             public void onResponse(Call<List<ShopeeOrderInfo>> call, Response<List<ShopeeOrderInfo>> response) {
